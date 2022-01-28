@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!--   python flask code for template inheritence, the title of the daughter templates will go between the block tile and end block      -->
+  <!--   python flask code for template inheritence, the title of the daughter templates will go between the block tile and end block      -->
   <title>{% block title %}{% endblock %} </title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,9 +24,11 @@
     bottom: 0;
     
   }
-
-  body { padding-top: 50px; 
-          padding-bottom: 10px;
+  
+/* Due to fixed navigation bar and footer, add margin at the top and bottom */
+  body { 
+    padding-top: 50px; 
+    padding-bottom: 10px;
         
   }
 
@@ -54,9 +56,6 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/about">About</a>
-      </li>    
-      <li class="nav-item">
-        <a class="nav-link" href="/match">Match SNPs</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/search"> Search SNPs</a>

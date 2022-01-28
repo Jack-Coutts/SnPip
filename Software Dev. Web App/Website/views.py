@@ -22,7 +22,3 @@ def documentation(): # this function will run whenever we go to this route
 @views.route('/search') # this is the search page
 def search(): # this function will run whenever we go to this route
     return render_template('search.html')
-
-@views.route('/match') # this is the match page
-def match(): # this function will run whenever we go to this route
-    return render_template('match.html')
