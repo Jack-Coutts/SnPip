@@ -4,6 +4,7 @@
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy 
+from os import path
 
 # define a new database 
 db = SQLAlchemy()
@@ -24,8 +25,15 @@ def create_app():
 
     app.register_blueprint(views, url_prefix='/') # register blueprints & state how they are accessed on the app 
         # we want all prefixes to be / as it goes before the prefix defined on blueprint
+    
+    from .models import Location, SNP # check we have loaded the models.py file
+
+    create_database(app)
 
     return app # create Flask app
 
 
-
+def create_database(app): # check if database already exists & if not create it
+    if not path.exists('website/' + DB_NAME):
+        db.create_all(app=app)
+        print('Created Database!')
