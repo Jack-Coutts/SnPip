@@ -2,7 +2,7 @@
 {% block title %} Search SNPs {% endblock %}
 {% block content %}
 
-<div class='mt-sm-3'>
+<div class='mt-sm-3'style="margin:auto;max-width:1000px">
     <h2>Search for SNPs</h2>
     <p>Use one of the below parameters to search for single nuceotide polymorphisms
          (SNPs) across populations in the 1000 genomes project.</p>
@@ -16,16 +16,22 @@
  style="margin:auto;max-width:600px">
    <input type="text" 
            placeholder="Search by SNP name E.g. rs999980" 
-           name="snp">
+           name="snp" class="form-control">
    
-   <select name="select" required >
+   <select name="select" required class="custom-select" >
        <option disabled selected value="">Search by</option>
        <option value="SNP Name">SNP Name</option>
        <option value="Gene Name">Gene Name</option>
        <option value="Location">Location</option>
    </select>
 
-   <button type="submit"><i class="fa fa-search"></i>
+   
+
+   <div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+
+   <!--<button type="submit"><i class="fa fa-search"></i>-->
    </button>
 </form>
 
