@@ -1,0 +1,78 @@
+{%extends "base.html" %}
+{% block title %} Search SNPs {% endblock %}
+{% block content %}
+
+<div class='mt-sm-3'>
+    <h2>Search for SNPs</h2>
+    <p>Use one of the below parameters to search for single nuceotide polymorphisms
+         (SNPs) across populations in the 1000 genomes project.</p>
+
+</div>
+
+
+
+
+<form class="example" method="post" action="/search" 
+ style="margin:auto;max-width:600px">
+   <input type="text" 
+           placeholder="Search by SNP name E.g. rs999980" 
+           name="snp">
+   
+   <select name="select" required >
+       <option disabled selected value="">Search by</option>
+       <option value="SNP Name">SNP Name</option>
+       <option value="Gene Name">Gene Name</option>
+       <option value="Location">Location</option>
+   </select>
+
+   <button type="submit"><i class="fa fa-search"></i>
+   </button>
+</form>
+
+<br>
+<br>
+
+
+<center>
+
+
+<!-- Data is a list of rows (each row is a nested list)-->
+
+
+<table class="table">
+
+    <thead>
+
+        {% for header in headings %}
+        <th>{{header}}</th>
+        {% endfor %}
+
+    </thead>  
+    
+    <tbody>
+
+        {% for row in data %}
+        <tr>
+            {% for item in row %}
+            <!-- for each item in row -->
+            <td> {{item}} </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+
+</center>
+
+
+
+
+
+
+
+
+
+{% endblock %}
