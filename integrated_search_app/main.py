@@ -92,16 +92,23 @@ def download():
 
 
 
-    buffer = BytesIO()
-    buffer.write(b'')
-   
-    buffer.seek(0)
-   
+    output = io.StringIO()
+    writer = csv.writer(output)
 
 
-    return send_file(buffer, as_attachment=True,
-                     attachment_filename= summaryFile,
-                     mimetype='text/csv')
+    headings=('SNP Name','Allele Frequency','EAF','AMR','AFR','AUR','SAS')
+    writer.writerow(headings)
+
+    #for row in result:
+        #writer.writerow(row)
+
+    
+    output.seek(0)
+
+
+    return Response(output, mimetype="text/csv", headers={"Content-Disposition":"attachment;filename=new.txt"})
+    cursor.close() 
+    conn.close()
 
 
 
