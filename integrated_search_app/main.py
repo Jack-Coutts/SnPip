@@ -1,7 +1,12 @@
 # import the app factory (the app)
 from Website import create_app
-from flask import render_template, redirect, request
+from flask import render_template, redirect, request, send_file, send_from_directory
 from flaskext.mysql import MySQL
+import datetime
+import io
+from io import BytesIO 
+from io import StringIO
+
 
 app = create_app()
 
@@ -75,7 +80,28 @@ def search(): # this function will run whenever we go to this route
         return render_template('search.html')
 
 
+#Still working on it 
+@app.route('/download')
+def download():
 
+
+    basename = "SNP"
+    suffix = datetime.datetime.now().strftime("%H%M%S")
+    filename = "".join([basename, suffix]) 
+    summaryFile = f'{filename}.txt'
+
+
+
+    buffer = BytesIO()
+    buffer.write(b'')
+   
+    buffer.seek(0)
+   
+
+
+    return send_file(buffer, as_attachment=True,
+                     attachment_filename= summaryFile,
+                     mimetype='text/csv')
 
 
 
