@@ -2,6 +2,35 @@
 {% block title %} Search SNPs {% endblock %}
 {% block content %}
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function(){
+      $('#save-link').click(function ()
+      {
+        var retContent = [];
+        var retString = '';
+        $('tbody tr').each(function (idx, elem)
+        {
+          var elemText = [];
+          $(elem).children('td').each(function (childIdx, childElem)
+          {
+            elemText.push($(childElem).text());
+          });
+          retContent.push(`${elemText.join('\t')}`);
+        });
+        retString = retContent.join(',\r\n');
+        var file = new Blob([retString], {type: 'text/plain'});
+        var btn = $('#save-link');
+        btn.attr("href", URL.createObjectURL(file));
+        btn.prop("download", "SNP.txt");
+      });
+    });
+
+</script>
+
+
+
 <div class='mt-sm-3'style="margin:auto;max-width:1000px">
     <h2>Search for SNPs</h2>
     <p>Use one of the below parameters to search for single nuceotide polymorphisms
@@ -47,13 +76,13 @@
 
 <table class="table">
 
-    <thead>
+    <tbody>
 
         {% for header in headings %}
-        <th>{{header}}</th>
+        <td class="font-weight-bold">{{header}}</td>
         {% endfor %}
 
-    </thead>  
+    </tbody>  
     
     <tbody>
 
@@ -74,9 +103,8 @@
 </center>
 
 
-
 <div class="container text-right" style="padding-right: 50px; padding-top: 50px;">
-    <a href="{{ url_for('download') }}" class= "btn btn-danger" > Download! </a>
+    <a href="#" id="save-link" class= "btn btn-danger" > Download! </a>
 </div>
 
 
