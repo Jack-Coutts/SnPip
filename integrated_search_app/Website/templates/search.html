@@ -6,7 +6,7 @@
 
 <script>
     $(document).ready(function(){
-      $('#save-link').click(function ()
+      $('#download').click(function ()
       {
         var retContent = [];
         var retString = '';
@@ -17,13 +17,13 @@
           {
             elemText.push($(childElem).text());
           });
-          retContent.push(`${elemText.join('\t')}`);
+          retContent.push(`${elemText.join(',\t')}`);
         });
         retString = retContent.join(',\r\n');
         var file = new Blob([retString], {type: 'text/plain'});
-        var btn = $('#save-link');
+        var btn = $('#download');
         btn.attr("href", URL.createObjectURL(file));
-        btn.prop("download", "SNP.txt");
+        btn.prop("download", "SNP_summary.csv");
       });
     });
 
@@ -104,7 +104,7 @@
 
 
 <div class="container text-right" style="padding-right: 50px; padding-top: 50px;">
-    <a href="#" id="save-link" class= "btn btn-danger" > Download! </a>
+    <a href="#" id="download" class= "btn btn-danger" > Download! </a>
 </div>
 
 
