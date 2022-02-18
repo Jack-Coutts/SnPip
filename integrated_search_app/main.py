@@ -208,11 +208,13 @@ def search(): # this function will run whenever we go to this route
             
             # If searching by Gene name
             if select == 'Gene Name':
-                
 
-                gene = request.form['snp']
+                gene = request.form['snp'].upper()
 
-                
+                cursor.execute("SELECT ID FROM snp WHERE GENE LIKE %s ", (gene))
+                conn.commit()
+                snps = len(cursor.fetchall())
+                num_snps = ('Number of SNPs found in ' + gene.upper() + ': ' + (str(snps) + '.'))
 
                 # SNP info table
                 cursor.execute("SELECT CHROM, POS, GENE, ID, REF, ALT FROM snp WHERE GENE LIKE %s ", (gene))
@@ -353,7 +355,8 @@ def search(): # this function will run whenever we go to this route
                                         gtitle=gtitle,
                                         ctitle=ctitle,
                                         ptitle=ptitle,
-                                        etitle=etitle )
+                                        etitle=etitle,
+                                        num_snps=num_snps)
 
             # If searching by Location
             if select == 'Location':
@@ -362,6 +365,12 @@ def search(): # this function will run whenever we go to this route
                 location=location.split('-')
                 areastart=int(location[0])
                 areaend=int(location[1])
+
+                
+                cursor.execute("SELECT ID FROM snp WHERE %s <= POS AND POS <= %s ", (areastart, areaend ))
+                conn.commit()
+                snps = len(cursor.fetchall())
+                num_snps = ('Number of SNPs found in the range of ' + str(areastart) + ' - ' + str(areaend) + ': ' + (str(snps) + '.'))
 
 
                 cursor.execute("SELECT CHROM, POS, GENE, ID, REF, ALT FROM snp WHERE %s <= POS AND POS <= %s ", (areastart, areaend ))
@@ -377,10 +386,136 @@ def search(): # this function will run whenever we go to this route
                     SNPtitle=''
                     data=''
 
+
+
+                if 'BEB' in subpop:
+
+                    cursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                    conn.commit()
+                    BEB = cursor.fetchall()
+
+                    if len(BEB) == 0:
+
+                        BEB = 'Bengali not found.'
+                        bhead=''
+                        btitle=''
+                    else:
+                        bhead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        btitle='Bengali'
+
+                if 'BEB' not in subpop:
+                    BEB=''
+                    bhead=''
+                    btitle=''
+
+                if 'GBR' in subpop:
+
+                    cursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s )", (areastart, areaend ))
+                    conn.commit()
+                    GBR = cursor.fetchall()
+
+                    if len(GBR) == 0:
+                        GBR = 'GBR not found.'
+                        gtitle=''
+                        ghead=''
+                    else:
+                        ghead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        gtitle='Great Britain'
+
+                if 'GBR' not in subpop:
+                    GBR=''
+                    ghead=''
+                    gtitle=''
+                
+                if 'CHB' in subpop:
+
+
+                    cursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s )", (areastart, areaend ))
+                    conn.commit()
+                    CHB = cursor.fetchall()
+
+                    if len(CHB) == 0:
+
+                        CHB = 'GBR not found.'
+                        ctitle=''
+                        chead=''
+
+                    else:
+                        chead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        ctitle='China'
+
+                if 'CHB' not in subpop:
+                    CHB=''
+                    chead=''
+                    ctitle=''
+
+                if 'PEL' in subpop:
+
+                    cursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s )", (areastart, areaend ))
+                    conn.commit()
+                    PEL = cursor.fetchall()
+
+                    if len(PEL) == 0:
+
+                        PEL = 'GBR not found.'
+                        ptitle=''
+                        phead=''
+
+                    else:
+                        phead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        ptitle='Peru'
+                
+                if 'PEL' not in subpop:
+                    PEL=''
+                    phead=''
+                    ptitle=''
+
+                if 'ESN' in subpop:
+
+                    cursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s )", (areastart, areaend ))
+                    conn.commit()
+                    ESN = cursor.fetchall()
+
+                    if len(ESN) == 0:
+
+                        ESN = 'GBR not found.'
+                        etitle=''
+                        ehead=''
+
+                    else:
+                        ehead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        etitle='Nigeria'
+
+                if 'ESN' not in subpop:
+                    ESN=''
+                    ehead=''
+                    etitle=''
+
+                else:
+                    pass
+
                 return render_template('search.html',
                                         data=data, 
                                         SNPtitle=SNPtitle, 
-                                        headings=headings)
+                                        headings=headings,
+                                        BEB=BEB, 
+                                        GBR=GBR, 
+                                        CHB=CHB, 
+                                        PEL=PEL, 
+                                        ESN=ESN, 
+                                        bhead=bhead, 
+                                        ghead=ghead, 
+                                        chead=chead, 
+                                        phead=phead,
+                                        ehead=ehead,
+                                        btitle=btitle,
+                                        gtitle=gtitle,
+                                        ctitle=ctitle,
+                                        ptitle=ptitle,
+                                        etitle=etitle,
+                                        num_snps=num_snps)
+
+                
 
 
 
