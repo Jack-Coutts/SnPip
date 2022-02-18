@@ -38,8 +38,12 @@
 
 </div>
 
-
-
+<!--
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" class="custom-control-input" id="customCheck" name="example1">
+  <label class="custom-control-label" for="customCheck">Check this custom checkbox</label>
+</div>
+-->
 
 <form class="example" method="post" action="/search" 
  style="margin:auto;max-width:600px">
@@ -53,6 +57,32 @@
        <option value="Gene Name">Gene Name</option>
        <option value="Location">Location</option>
    </select>
+
+    <div class='form-control' required>
+  
+      <label>Populations: </label>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" name='subpop' value="GBR" checked >
+        <label class="form-check-label" for="inlineCheckbox1">Great Britain</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="inlineCheckbox2" name='subpop' value="CHB" checked>
+        <label class="form-check-label" for="inlineCheckbox2">China</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="inlineCheckbox3" name='subpop' value="BEB" checked >
+        <label class="form-check-label" for="inlineCheckbox3">Bengali</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="inlineCheckbox4" name='subpop' value="PEL" checked >
+        <label class="form-check-label" for="inlineCheckbox4">Peru</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="inlineCheckbox5" name='subpop' value="ESN" checked>
+        <label class="form-check-label" for="inlineCheckbox5">Nigeria</label>
+    </div>
+
+  </div>
 
    
 
@@ -74,14 +104,18 @@
 <!-- Data is a list of rows (each row is a nested list)-->
 
 
+<h3>{{SNPtitle}}</h3>
+
+
+
 <table class="table">
 
     <tbody>
-
+        
         {% for header in headings %}
         <td class="font-weight-bold">{{header}}</td>
         {% endfor %}
-
+        
     </tbody>  
     
     <tbody>
@@ -89,8 +123,9 @@
         {% for row in data %}
         <tr>
             {% for item in row %}
-            <!-- for each item in row -->
+           
             <td> {{item}} </td>
+            
             {% endfor %}
         </tr>
         {% endfor %}
@@ -98,6 +133,156 @@
     </tbody>
 
 </table>
+
+<br>
+<br>
+
+<h3>{{btitle}}</h3>
+
+<table class="table">
+
+  <tbody>
+        
+    {% for header in bhead %}
+    <td class="font-weight-bold">{{header}}</td>
+    {% endfor %}
+    
+  </tbody>  
+
+  <tbody>
+
+    {% for row in BEB %}
+    <tr>
+        {% for item in row %}
+      
+        <td> {{item}} </td>
+        
+        {% endfor %}
+    </tr>
+    {% endfor %}
+
+  </tbody>
+
+</table>
+
+<br>
+
+<h3>{{gtitle}}</h3>
+
+<table class="table">
+
+  <tbody>
+        
+    {% for header in ghead %}
+    <td class="font-weight-bold">{{header}}</td>
+    {% endfor %}
+    
+  </tbody>  
+
+  <tbody>
+
+    {% for row in GBR %}
+    <tr>
+        {% for item in row %}
+      
+        <td> {{item}} </td>
+        
+        {% endfor %}
+    </tr>
+    {% endfor %}
+
+  </tbody>
+
+</table>
+
+<br>
+<h3>{{ctitle}}</h3>
+
+<table class="table">
+
+  <tbody>
+        
+    {% for header in chead %}
+    <td class="font-weight-bold">{{header}}</td>
+    {% endfor %}
+    
+  </tbody>  
+
+  <tbody>
+
+    {% for row in CHB %}
+    <tr>
+        {% for item in row %}
+      
+        <td> {{item}} </td>
+        
+        {% endfor %}
+    </tr>
+    {% endfor %}
+
+  </tbody>
+
+</table>
+
+<br>
+<h3>{{ptitle}}</h3>
+
+
+<table class="table">
+
+  <tbody>
+        
+    {% for header in phead %}
+    <td class="font-weight-bold">{{header}}</td>
+    {% endfor %}
+    
+  </tbody>  
+
+  <tbody>
+
+    {% for row in PEL %}
+    <tr>
+        {% for item in row %}
+      
+        <td> {{item}} </td>
+        
+        {% endfor %}
+    </tr>
+    {% endfor %}
+
+  </tbody>
+
+</table>
+
+<br>
+<h3>{{etitle}}</h3>
+
+<table class="table">
+
+  <tbody>
+        
+    {% for header in ehead %}
+    <td class="font-weight-bold">{{header}}</td>
+    {% endfor %}
+    
+  </tbody>  
+
+  <tbody>
+
+    {% for row in ESN %}
+    <tr>
+        {% for item in row %}
+      
+        <td> {{item}} </td>
+        
+        {% endfor %}
+    </tr>
+    {% endfor %}
+
+  </tbody>
+
+</table>
+
 
 
 </center>

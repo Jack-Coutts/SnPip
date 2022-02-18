@@ -14,7 +14,7 @@ app = create_app()
 # Database connection info. Note that this is not a secure connection.
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'password'
-app.config['MYSQL_DATABASE_DB'] = 'chr22'
+app.config['MYSQL_DATABASE_DB'] = 'snpip'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
 # Initialises MySQL
@@ -48,20 +48,158 @@ def search(): # this function will run whenever we go to this route
 
         if request.method == "POST":
             select=request.form['select']
+            snp = request.form['snp']
+
+            try:
+
+                subpop=request.form.getlist('subpop')
+
+            except:
+
+                return 'You must select at least one population'
+
+
 
             # If searching by snp name
             if select == 'SNP Name':
 
-                snp = request.form['snp']
                 # search by SNP
-                cursor.execute("SELECT * from pop WHERE ID LIKE %s ", (snp))
+                cursor.execute("SELECT CHROM, POS, GENE, ID, REF, ALT FROM snp WHERE ID LIKE %s ", (snp))
                 conn.commit()
                 data = cursor.fetchall()
+
                 if len(data) > 0:
-                    headings=('SNP Name','Allele Frequency','EAF','AMR','AFR','AUR','SAS')
-                else:
+                    headings=('Chromosome','Position', 'Gene','rsID','Reference','Alternate')
+                    SNPtitle='SNP Information'
+
+                if len(data) <= 0:
                     headings=''
-                return render_template('search.html', data=data, headings=headings)
+                    SNPtitle=''
+                
+                if 'BEB' in subpop:
+
+                    cursor.execute("SELECT * FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Bengali'", (snp))
+                    conn.commit()
+                    BEB = cursor.fetchall()
+
+                    if len(BEB) == 0:
+
+                        BEB = 'Bengali not found.'
+                        bhead=''
+                        btitle=''
+                    else:
+                        bhead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        btitle='Bengali'
+
+                if 'BEB' not in subpop:
+                    BEB=''
+                    bhead=''
+                    btitle=''
+
+                if 'GBR' in subpop:
+
+                    cursor.execute("SELECT * FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'GBR'", (snp))
+                    conn.commit()
+                    GBR = cursor.fetchall()
+
+                    if len(GBR) == 0:
+                        GBR = 'GBR not found.'
+                        gtitle=''
+                    else:
+                        ghead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        gtitle='Great Britain'
+
+                if 'GBR' not in subpop:
+                    GBR=''
+                    ghead=''
+                    gtitle=''
+                
+                if 'CHB' in subpop:
+
+
+                    cursor.execute("SELECT * FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'China'", (snp))
+                    conn.commit()
+                    CHB = cursor.fetchall()
+
+                    if len(CHB) == 0:
+
+                        CHB = 'GBR not found.'
+                        ctitle=''
+
+                    else:
+                        chead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        ctitle='China'
+
+                if 'CHB' not in subpop:
+                    CHB=''
+                    chead=''
+                    ctitle=''
+
+                if 'PEL' in subpop:
+
+                    cursor.execute("SELECT * FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Peru'", (snp))
+                    conn.commit()
+                    PEL = cursor.fetchall()
+
+                    if len(PEL) == 0:
+
+                        PEL = 'GBR not found.'
+                        ptitle=''
+
+                    else:
+                        phead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        ptitle='Peru'
+                
+                if 'PEL' not in subpop:
+                    PEL=''
+                    phead=''
+                    ptitle=''
+
+                if 'ESN' in subpop:
+
+                    cursor.execute("SELECT * FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Nigeria'", (snp))
+                    conn.commit()
+                    ESN = cursor.fetchall()
+
+                    if len(ESN) == 0:
+
+                        ESN = 'GBR not found.'
+                        etitle=''
+
+                    else:
+                        ehead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        etitle='Nigeria'
+
+                if 'ESN' not in subpop:
+                    ESN=''
+                    ehead=''
+                    etitle=''
+
+                else:
+                    pass
+
+                
+
+
+                return render_template('search.html', 
+                                        data=data, 
+                                        headings=headings, 
+                                        BEB=BEB, 
+                                        GBR=GBR, 
+                                        CHB=CHB, 
+                                        PEL=PEL, 
+                                        ESN=ESN, 
+                                        bhead=bhead, 
+                                        ghead=ghead, 
+                                        chead=chead, 
+                                        phead=phead,
+                                        ehead=ehead,
+                                        SNPtitle=SNPtitle,
+                                        btitle=btitle,
+                                        gtitle=gtitle,
+                                        ctitle=ctitle,
+                                        ptitle=ptitle,
+                                        etitle=etitle )
             
             # If searching by Gene name
             if select == 'Gene Name':
@@ -79,36 +217,6 @@ def search(): # this function will run whenever we go to this route
 
         return render_template('search.html')
 
-
-#Still working on it 
-@app.route('/download')
-def download():
-
-
-    basename = "SNP"
-    suffix = datetime.datetime.now().strftime("%H%M%S")
-    filename = "".join([basename, suffix]) 
-    summaryFile = f'{filename}.txt'
-
-
-
-    output = io.StringIO()
-    writer = csv.writer(output)
-
-
-    headings=('SNP Name','Allele Frequency','EAF','AMR','AFR','AUR','SAS')
-    writer.writerow(headings)
-
-    #for row in result:
-        #writer.writerow(row)
-
-    
-    output.seek(0)
-
-
-    return Response(output, mimetype="text/csv", headers={"Content-Disposition":"attachment;filename=new.txt"})
-    cursor.close() 
-    conn.close()
 
 
 
