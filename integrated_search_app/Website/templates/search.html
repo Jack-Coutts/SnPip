@@ -17,7 +17,7 @@
                                         {
               elemText.push($(childElem).text());
             });
-            retContent.push(`${elemText.join('\t')}`);
+            retContent.push(`${elemText.join(',\t')}`);
           });
 
           $('tbody tr').each(function (idx, elem)
@@ -27,7 +27,7 @@
                                         {
               elemText.push($(childElem).text());
             });
-            retContent.push(`${elemText.join('\t')}`);
+            retContent.push(`${elemText.join(',\t')}`);
           });
           retString = retContent.join(',\r\n');
           var file = new Blob([retString], {type: 'text/plain'});
