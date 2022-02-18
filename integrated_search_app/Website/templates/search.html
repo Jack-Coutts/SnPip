@@ -7,46 +7,38 @@
 <script>
     $(document).ready(function(){
       $('#download').click(function ()
-                              {
-          var retContent = [];
-          var retString = '';
-          $('thead tr').each(function (idx, elem)
-                             {
-            var elemText = [];
-            $(elem).children('th').each(function (childIdx, childElem)
-                                        {
-              elemText.push($(childElem).text());
-            });
-            retContent.push(`${elemText.join(',\t')}`);
+      {
+        var retContent = [];
+        var retString = '';
+        $('tbody tr').each(function (idx, elem)
+        {
+          var elemText = [];
+          $(elem).children('td').each(function (childIdx, childElem)
+          {
+            elemText.push($(childElem).text());
           });
-
-          $('tbody tr').each(function (idx, elem)
-                             {
-            var elemText = [];
-            $(elem).children('td').each(function (childIdx, childElem)
-                                        {
-              elemText.push($(childElem).text());
-            });
-            retContent.push(`${elemText.join(',\t')}`);
-          });
-          retString = retContent.join(',\r\n');
-          var file = new Blob([retString], {type: 'text/plain'});
-          var btn = $('#download');
-          btn.attr("href", URL.createObjectURL(file));
-          btn.prop("download", "SNP_summary.csv");
-        })
+          retContent.push(`${elemText.join('\t')}`);
+        });
+        retString = retContent.join('\r\n');
+        var file = new Blob([retString], {type: 'text/plain'});
+        var btn = $('#download');
+        btn.attr("href", URL.createObjectURL(file));
+        btn.prop("download", "SNP_summary.tsv");
+      });
     });
 
 </script>
 
 
-
+<center>
 <div class='mt-sm-3'style="margin:auto;max-width:1000px">
     <h2>Search for SNPs</h2>
     <p>Use one of the below parameters to search for single nuceotide polymorphisms
          (SNPs) across populations in the 1000 genomes project.</p>
 
 </div>
+</center>
+
 
 <!--
 <div class="custom-control custom-checkbox">
@@ -58,7 +50,7 @@
 <form class="example" method="post" action="/search" 
  style="margin:auto;max-width:600px">
    <input type="text" 
-           placeholder="Search by SNP name E.g. rs999980" 
+           placeholder="E.g. rs999980 or ACTR3BP7 or 11124625-15303188" 
            name="snp" class="form-control">
    
    <select name="select" required class="custom-select" >
@@ -104,203 +96,254 @@
    </button>
 </form>
 
+
+<div class="container text-right" style="padding-right: 50px; padding-top: 50px;">
+  <a href="#" id="download" class= "btn btn-danger" > Download! </a>
+</div>
+
+
 <br>
 <br>
 
 
-<center>
 
 
 <!-- Data is a list of rows (each row is a nested list)-->
 
-
+<center>
 <h3>{{SNPtitle}}</h3>
-
-
-
-<table class="table">
-
-    <tbody>
-        
-        {% for header in headings %}
-        <td class="font-weight-bold">{{header}}</td>
-        {% endfor %}
-        
-    </tbody>  
-    
-    <tbody>
-
-        {% for row in data %}
-        <tr>
-            {% for item in row %}
-           
-            <td> {{item}} </td>
-            
-            {% endfor %}
-        </tr>
-        {% endfor %}
-
-    </tbody>
-
-</table>
-
-<br>
-<br>
-
-<h3>{{btitle}}</h3>
-
-<table class="table">
-
-  <tbody>
-        
-    {% for header in bhead %}
-    <td class="font-weight-bold">{{header}}</td>
-    {% endfor %}
-    
-  </tbody>  
-
-  <tbody>
-
-    {% for row in BEB %}
-    <tr>
-        {% for item in row %}
-      
-        <td> {{item}} </td>
-        
-        {% endfor %}
-    </tr>
-    {% endfor %}
-
-  </tbody>
-
-</table>
-
-<br>
-
-<h3>{{gtitle}}</h3>
-
-<table class="table">
-
-  <tbody>
-        
-    {% for header in ghead %}
-    <td class="font-weight-bold">{{header}}</td>
-    {% endfor %}
-    
-  </tbody>  
-
-  <tbody>
-
-    {% for row in GBR %}
-    <tr>
-        {% for item in row %}
-      
-        <td> {{item}} </td>
-        
-        {% endfor %}
-    </tr>
-    {% endfor %}
-
-  </tbody>
-
-</table>
-
-<br>
-<h3>{{ctitle}}</h3>
-
-<table class="table">
-
-  <tbody>
-        
-    {% for header in chead %}
-    <td class="font-weight-bold">{{header}}</td>
-    {% endfor %}
-    
-  </tbody>  
-
-  <tbody>
-
-    {% for row in CHB %}
-    <tr>
-        {% for item in row %}
-      
-        <td> {{item}} </td>
-        
-        {% endfor %}
-    </tr>
-    {% endfor %}
-
-  </tbody>
-
-</table>
-
-<br>
-<h3>{{ptitle}}</h3>
-
-
-<table class="table">
-
-  <tbody>
-        
-    {% for header in phead %}
-    <td class="font-weight-bold">{{header}}</td>
-    {% endfor %}
-    
-  </tbody>  
-
-  <tbody>
-
-    {% for row in PEL %}
-    <tr>
-        {% for item in row %}
-      
-        <td> {{item}} </td>
-        
-        {% endfor %}
-    </tr>
-    {% endfor %}
-
-  </tbody>
-
-</table>
-
-<br>
-<h3>{{etitle}}</h3>
-
-<table class="table">
-
-  <tbody>
-        
-    {% for header in ehead %}
-    <td class="font-weight-bold">{{header}}</td>
-    {% endfor %}
-    
-  </tbody>  
-
-  <tbody>
-
-    {% for row in ESN %}
-    <tr>
-        {% for item in row %}
-      
-        <td> {{item}} </td>
-        
-        {% endfor %}
-    </tr>
-    {% endfor %}
-
-  </tbody>
-
-</table>
-
-
-
 </center>
 
+<div class="container" style="height: 500px;overflow: scroll;">
+  <table class="table table-striped table-bordered table-sm " >
+    
 
-<div class="container text-right" style="padding-right: 50px; padding-top: 50px;">
-    <a href="#" id="download" class= "btn btn-danger" > Download! </a>
+      <thead>
+
+        <tr>
+
+          {% for header in headings %}
+          <th class="th-sm font-weight-bold">{{header}}</th>
+          {% endfor %}
+
+        </tr>
+          
+      </thead>  
+      
+      <tbody>
+
+          {% for row in data %}
+          <tr>
+              {% for item in row %}
+            
+              <td> {{item}} </td>
+              
+              {% endfor %}
+          </tr>
+          {% endfor %}
+
+      </tbody>
+
+  </table>
+
 </div>
+
+<br>
+
+
+<center>
+<h3>{{btitle}}</h3>
+</center>
+
+<div class="container" style="height: 400px;overflow: scroll;">
+  <table class="table table-striped table-bordered table-sm ">
+
+      <thead>
+
+        <tr>
+
+          {% for header in bhead %}
+          <th class="th-sm font-weight-bold">{{header}}</th>
+          {% endfor %}
+
+        </tr>
+          
+      </thead>  
+      
+      <tbody>
+
+          {% for row in BEB %}
+          <tr>
+              {% for item in row %}
+            
+              <td> {{item}} </td>
+              
+              {% endfor %}
+          </tr>
+          {% endfor %}
+
+      </tbody>
+
+  </table>
+
+</div>
+
+<br>
+
+<center>
+<h3>{{gtitle}}</h3>
+</center>
+
+<div class="container" style="height: 400px;overflow: scroll;">
+  <table class="table table-striped table-bordered table-sm ">
+
+      <thead>
+
+        <tr>
+
+          {% for header in ghead %}
+          <th class="th-sm font-weight-bold">{{header}}</th>
+          {% endfor %}
+
+        </tr>
+          
+      </thead>  
+      
+      <tbody>
+
+          {% for row in GBR %}
+          <tr>
+              {% for item in row %}
+            
+              <td> {{item}} </td>
+              
+              {% endfor %}
+          </tr>
+          {% endfor %}
+
+      </tbody>
+
+  </table>
+
+</div>
+
+<br>
+
+<center>
+<h3>{{ctitle}}</h3>
+</center>
+
+<div class="container" style="height: 400px;overflow: scroll;">
+  <table class="table table-striped table-bordered table-sm ">
+
+      <thead>
+
+        <tr>
+
+          {% for header in chead %}
+          <th class="th-sm font-weight-bold">{{header}}</th>
+          {% endfor %}
+
+        </tr>
+          
+      </thead>  
+      
+      <tbody>
+
+          {% for row in CHB %}
+          <tr>
+              {% for item in row %}
+            
+              <td> {{item}} </td>
+              
+              {% endfor %}
+          </tr>
+          {% endfor %}
+
+      </tbody>
+
+  </table>
+
+</div>
+
+<br>
+
+<center>
+<h3>{{ptitle}}</h3>
+</center>
+
+<div class="container" style="height: 400px;overflow: scroll;">
+  <table class="table table-striped table-bordered table-sm ">
+
+      <thead>
+
+        <tr>
+
+          {% for header in phead %}
+          <th class="th-sm font-weight-bold">{{header}}</th>
+          {% endfor %}
+
+        </tr>
+          
+      </thead>  
+      
+      <tbody>
+
+          {% for row in PEL %}
+          <tr>
+              {% for item in row %}
+            
+              <td> {{item}} </td>
+              
+              {% endfor %}
+          </tr>
+          {% endfor %}
+
+      </tbody>
+
+  </table>
+
+</div>
+
+<br>
+
+<center>
+<h3>{{etitle}}</h3>
+</center>
+
+<div class="container" style="height: 400px;overflow: scroll;">
+  <table class="table table-striped table-bordered table-sm ">
+
+      <thead>
+
+        <tr>
+
+          {% for header in ehead %}
+          <th class="th-sm font-weight-bold">{{header}}</th>
+          {% endfor %}
+
+        </tr>
+          
+      </thead>  
+      
+      <tbody>
+
+          {% for row in ESN %}
+          <tr>
+              {% for item in row %}
+            
+              <td> {{item}} </td>
+              
+              {% endfor %}
+          </tr>
+          {% endfor %}
+
+      </tbody>
+
+  </table>
+
+</div>
+
 
 
 
