@@ -10,10 +10,10 @@
       {
         var retContent = [];
         var retString = '';
-        $('tbody tr').each(function (idx, elem)
+        $('table tr').each(function (idx, elem)
         {
           var elemText = [];
-          $(elem).children('td').each(function (childIdx, childElem)
+          $(elem).children('th,td').each(function (childIdx, childElem)
           {
             elemText.push($(childElem).text());
           });
