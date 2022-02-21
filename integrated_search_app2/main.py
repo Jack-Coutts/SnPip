@@ -14,7 +14,7 @@ import io
 from io import BytesIO 
 from io import StringIO
 
-import pandas as pd
+import time
 
 #from Website.functions import *
 
@@ -32,24 +32,6 @@ try:
 except Error as e:
     print(e)
 
-
-
-'''
-# Database connection info. Note that this is not a secure connection.
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'password'
-app.config['MYSQL_DATABASE_DB'] = 'snpip'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-
-# Initialises MySQL
-mysql = MySQL()
-mysql.init_app(app)
-
-# Create a cursor to manipulate data in database
-conn = mysql.connect()
-cursor = conn.cursor()
-
-'''
 
 ### Pages/structure of app ###
 
@@ -72,7 +54,12 @@ def documentation(): # this function will run whenever we go to this route
 def search(): # this function will run whenever we go to this route
 
         if request.method == "POST":
+
             select=request.form['select']
+
+            #Time how long it takes to run
+            start_time = time.time()
+
 
             try:
 
@@ -92,138 +79,61 @@ def search(): # this function will run whenever we go to this route
                 # search by SNP
                 mycursor.execute("SELECT CHROM, POS, GENE, ID, REF, ALT FROM snp WHERE ID = %s ", [snp])
                 data = mycursor.fetchall()
+                head=['CHROM', 'POS', 'GENE', 'ID', 'REF', 'ALT']
 
-                if len(data) > 0:
-                    headings=['Chromosome','Position', 'Gene','rsID','Reference','Alternate']
-                    SNPtitle='SNP Information'
+                for item in subpop:
 
-                if len(data) <= 0:
-                    headings=''
-                    SNPtitle=''
-                
-                if 'BEB' in subpop:
+                    if item == 'BEB':
 
-                    mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Bengali'", [snp])
-                    BEB = mycursor.fetchall()
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Bengali'", [snp])
+                        BEB = mycursor.fetchall()
+                        bhead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']
 
-                    if len(BEB) == 0:
 
-                        BEB = 'Bengali not found.'
-                        bhead=''
-                        btitle=''
-                    else:
-                        bhead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        btitle='Bengali'
+                    elif item == 'GBR':
 
-                if 'BEB' not in subpop:
-                    BEB=''
-                    bhead=''
-                    btitle=''
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'GBR'", [snp])
+                        GBR = mycursor.fetchall()
+                        ghead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']
 
-                if 'GBR' in subpop:
+                    elif item == 'CHB':
 
-                    mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'GBR'", [snp])
-                    GBR = mycursor.fetchall()
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'China'", [snp])
+                        CHB = mycursor.fetchall()
+                        chead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']
 
-                    if len(GBR) == 0:
-                        GBR = 'GBR not found.'
-                        gtitle=''
-                        ghead=''
-                    else:
-                        ghead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        gtitle='Great Britain'
+                    elif item == 'PEL':
 
-                if 'GBR' not in subpop:
-                    GBR=''
-                    ghead=''
-                    gtitle=''
-                
-                if 'CHB' in subpop:
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Peru'", [snp])
+                        PEL = mycursor.fetchall()
+                        phead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']
 
-                    mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'China'", [snp])
-                    CHB = mycursor.fetchall()
+                    elif item == 'ESN':
 
-                    if len(CHB) == 0:
-
-                        CHB = 'China not found.'
-                        ctitle=''
-                        chead=''
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Nigeria'", [snp])
+                        ESN = mycursor.fetchall()
+                        ehead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']
 
                     else:
-                        chead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        ctitle='China'
+                        pass
 
-                if 'CHB' not in subpop:
-                    CHB=''
-                    chead=''
-                    ctitle=''
-
-                if 'PEL' in subpop:
-
-                    mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Peru'", [snp])
-                    PEL = mycursor.fetchall()
-
-                    if len(PEL) == 0:
-
-                        PEL = 'Peru not found.'
-                        ptitle=''
-                        phead=''
-
-                    else:
-                        phead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        ptitle='Peru'
-                
-                if 'PEL' not in subpop:
-                    PEL=''
-                    phead=''
-                    ptitle=''
-
-                if 'ESN' in subpop:
-
-                    mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Nigeria'", [snp])
-                    ESN = mycursor.fetchall()
-
-                    if len(ESN) == 0:
-
-                        ESN = 'Nigeria not found.'
-                        etitle=''
-                        ehead=''
-
-                    else:
-                        ehead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        etitle='Nigeria'
-
-                if 'ESN' not in subpop:
-                    ESN=''
-                    ehead=''
-                    etitle=''
-
-                else:
-                    pass
-
-                
-
+                runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
 
                 return render_template('search.html', 
                                         data=data, 
-                                        headings=headings, 
                                         BEB=BEB, 
                                         GBR=GBR, 
                                         CHB=CHB, 
                                         PEL=PEL, 
-                                        ESN=ESN, 
-                                        bhead=bhead, 
-                                        ghead=ghead, 
-                                        chead=chead, 
+                                        ESN=ESN,
+                                        head=head,
+                                        bhead=bhead,
+                                        ghead=ghead,
+                                        chead=chead,
                                         phead=phead,
                                         ehead=ehead,
-                                        SNPtitle=SNPtitle,
-                                        btitle=btitle,
-                                        gtitle=gtitle,
-                                        ctitle=ctitle,
-                                        ptitle=ptitle,
-                                        etitle=etitle,
-                                        df=df )
+                                        runtime=runtime
+                                        )
             
             # If searching by Gene name
             if select == 'Gene Name':
@@ -239,120 +149,131 @@ def search(): # this function will run whenever we go to this route
 
                 mycursor.execute("SELECT CHROM, POS, GENE, ID, REF, ALT FROM snp WHERE GENE LIKE %s ", [gene])
                 data = mycursor.fetchall()
+                head=('Chromosome','Position', 'Gene','rsID','Reference','Alternate')
+                SNPtitle='SNP Information'
 
-                if len(data) > 0:
-                    headings=('Chromosome','Position', 'Gene','rsID','Reference','Alternate')
-                    SNPtitle='SNP Information'
+                for item in subpop:
 
-                if len(data) <= 0:
-                    headings=''
-                    SNPtitle=''
-                    data=''
+                    if item == 'BEB':
 
-
-                if 'BEB' in subpop:
-
-                    mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
-                    BEB = mycursor.fetchall()
-
-                    
-
-                    if len(BEB) == 0:
-
-                        BEB = 'Bengali not found.'
-                        bhead=''
-                        btitle=''
-                    else:
+                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        BEB = mycursor.fetchall()
                         bhead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
                         btitle='Bengali'
 
-                if 'BEB' not in subpop:
-                    BEB=''
-                    bhead=''
-                    btitle=''
+                    elif item == 'GBR':
 
-                if 'GBR' in subpop:
-
-                    mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
-                    GBR = mycursor.fetchall()
-
-                    if len(GBR) == 0:
-                        GBR = 'GBR not found.'
-                        gtitle=''
-                        ghead=''
-                    else:
+                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        GBR = mycursor.fetchall()
                         ghead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
                         gtitle='Great Britain'
 
-                if 'GBR' not in subpop:
-                    GBR=''
-                    ghead=''
-                    gtitle=''
-                
-                if 'CHB' in subpop:
+                    elif item == 'CHB':
 
-                    mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
-                    CHB = mycursor.fetchall()
-
-
-                    if len(CHB) == 0:
-
-                        CHB = 'GBR not found.'
-                        ctitle=''
-                        chead=''
-
-                    else:
+                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        CHB = mycursor.fetchall()
                         chead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
                         ctitle='China'
 
-                if 'CHB' not in subpop:
-                    CHB=''
-                    chead=''
-                    ctitle=''
+                    elif item == 'PEL':
 
-                if 'PEL' in subpop:
-
-                    mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
-                    PEL = mycursor.fetchall()
-
-
-                    if len(PEL) == 0:
-
-                        PEL = 'GBR not found.'
-                        ptitle=''
-                        phead=''
-
-                    else:
+                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        PEL = mycursor.fetchall()
                         phead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
                         ptitle='Peru'
-                
-                if 'PEL' not in subpop:
-                    PEL=''
-                    phead=''
-                    ptitle=''
+                    
+                    elif item == 'ESN':
 
-                if 'ESN' in subpop:
-
-                    mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
-                    ESN = mycursor.fetchall()
-
-                    if len(ESN) == 0:
-
-                        ESN = 'GBR not found.'
-                        etitle=''
-                        ehead=''
-
+                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        ESN = mycursor.fetchall()
+                        ehead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        etitle='Nigeria'
+                    
                     else:
+                        pass
+
+                runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
+
+                return render_template('search.html',
+                                        data=data, 
+                                        SNPtitle=SNPtitle, 
+                                        head=head,
+                                        BEB=BEB, 
+                                        GBR=GBR, 
+                                        CHB=CHB, 
+                                        PEL=PEL, 
+                                        ESN=ESN, 
+                                        bhead=bhead, 
+                                        ghead=ghead, 
+                                        chead=chead, 
+                                        phead=phead,
+                                        ehead=ehead,
+                                        btitle=btitle,
+                                        gtitle=gtitle,
+                                        ctitle=ctitle,
+                                        ptitle=ptitle,
+                                        etitle=etitle,
+                                        num_snps=num_snps,
+                                        runtime=runtime)
+
+            # If searching by Location
+            if select == 'Location':
+
+                location = request.form['snp']
+                location=location.split('-')
+                areastart=int(location[0])
+                areaend=int(location[1])
+
+                mycursor.execute("SELECT ID FROM snp WHERE %s <= POS AND POS <= %s ", (areastart, areaend ))
+                snps = len(mycursor.fetchall())
+                num_snps = ('Number of SNPs found in the range of ' + str(areastart) + ' - ' + str(areaend) + ': ' + (str(snps) + '.'))
+
+                mycursor.execute("SELECT CHROM, POS, GENE, ID, REF, ALT FROM snp WHERE %s <= POS AND POS <= %s ", (areastart, areaend ))
+                data = mycursor.fetchall()
+                headings=('Chromosome','Position', 'Gene','rsID','Reference','Alternate')
+                SNPtitle='SNP Information'
+
+                for item in subpop:
+
+                    if item == 'BEB':
+
+                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                        BEB = mycursor.fetchall()
+                        bhead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        btitle='Bengali'
+
+                    elif item == 'GBR':
+
+                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                        GBR = mycursor.fetchall()
+                        ghead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        gtitle='Great Britain'
+
+                    elif item == 'CHB':
+
+                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                        CHB = mycursor.fetchall()
+                        chead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        ctitle='China'
+
+                    elif item == 'PEL':
+
+                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                        PEL = mycursor.fetchall()
+                        phead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
+                        ptitle='Peru'
+      
+                    elif item == 'ESN':
+
+                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                        ESN = mycursor.fetchall()
                         ehead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
                         etitle='Nigeria'
 
-                if 'ESN' not in subpop:
-                    ESN=''
-                    ehead=''
-                    etitle=''
+                    else:
+                        pass
 
-                else:
-                    pass
+                runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
 
                 return render_template('search.html',
                                         data=data, 
@@ -374,164 +295,9 @@ def search(): # this function will run whenever we go to this route
                                         ptitle=ptitle,
                                         etitle=etitle,
                                         num_snps=num_snps,
-                                        df=df)
-
-            # If searching by Location
-            if select == 'Location':
-
-                location = request.form['snp']
-                location=location.split('-')
-                areastart=int(location[0])
-                areaend=int(location[1])
-
-                mycursor.execute("SELECT ID FROM snp WHERE %s <= POS AND POS <= %s ", ([areastart], [areaend] ))
-                snps = len(mycursor.fetchall())
-                num_snps = ('Number of SNPs found in the range of ' + str(areastart) + ' - ' + str(areaend) + ': ' + (str(snps) + '.'))
-
-                mycursor.execute("SELECT CHROM, POS, GENE, ID, REF, ALT FROM snp WHERE %s <= POS AND POS <= %s ", ([areastart], [areaend] ))
-                data = mycursor.fetchall()
-
-                if len(data) > 0:
-                    headings=('Chromosome','Position', 'Gene','rsID','Reference','Alternate')
-                    SNPtitle='SNP Information'
-
-                if len(data) <= 0:
-                    headings=''
-                    SNPtitle=''
-                    data=''
-
-
-
-                if 'BEB' in subpop:
-
-                    mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", ([areastart], [areaend] ))
-                    BEB = mycursor.fetchall()
-
-                    if len(BEB) == 0:
-
-                        BEB = 'Bengali not found.'
-                        bhead=''
-                        btitle=''
-                    else:
-                        bhead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        btitle='Bengali'
-
-                if 'BEB' not in subpop:
-                    BEB=''
-                    bhead=''
-                    btitle=''
-
-                if 'GBR' in subpop:
-
-                    mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", ([areastart], [areaend] ))
-                    GBR = mycursor.fetchall()
-
-                    if len(GBR) == 0:
-                        GBR = 'GBR not found.'
-                        gtitle=''
-                        ghead=''
-                    else:
-                        ghead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        gtitle='Great Britain'
-
-                if 'GBR' not in subpop:
-                    GBR=''
-                    ghead=''
-                    gtitle=''
-                
-                if 'CHB' in subpop:
-
-                    mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", ([areastart], [areaend] ))
-                    CHB = mycursor.fetchall()
-
-                    if len(CHB) == 0:
-
-                        CHB = 'GBR not found.'
-                        ctitle=''
-                        chead=''
-
-                    else:
-                        chead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        ctitle='China'
-
-                if 'CHB' not in subpop:
-                    CHB=''
-                    chead=''
-                    ctitle=''
-
-                if 'PEL' in subpop:
-
-                    mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", ([areastart], [areaend] ))
-                    PEL = mycursor.fetchall()
-
-
-                    if len(PEL) == 0:
-
-                        PEL = 'GBR not found.'
-                        ptitle=''
-                        phead=''
-
-                    else:
-                        phead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        ptitle='Peru'
-                
-                if 'PEL' not in subpop:
-                    PEL=''
-                    phead=''
-                    ptitle=''
-
-                if 'ESN' in subpop:
-
-                    mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", ([areastart], [areaend] ))
-                    ESN = mycursor.fetchall()
-
-                    if len(ESN) == 0:
-
-                        ESN = 'GBR not found.'
-                        etitle=''
-                        ehead=''
-
-                    else:
-                        ehead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        etitle='Nigeria'
-
-                if 'ESN' not in subpop:
-                    ESN=''
-                    ehead=''
-                    etitle=''
-
-                else:
-                    pass
-
-                return render_template('search.html',
-                                        data=data, 
-                                        SNPtitle=SNPtitle, 
-                                        headings=headings,
-                                        BEB=BEB, 
-                                        GBR=GBR, 
-                                        CHB=CHB, 
-                                        PEL=PEL, 
-                                        ESN=ESN, 
-                                        bhead=bhead, 
-                                        ghead=ghead, 
-                                        chead=chead, 
-                                        phead=phead,
-                                        ehead=ehead,
-                                        btitle=btitle,
-                                        gtitle=gtitle,
-                                        ctitle=ctitle,
-                                        ptitle=ptitle,
-                                        etitle=etitle,
-                                        num_snps=num_snps)
+                                        runtime=runtime)
 
                 
-
-
-
-
-
-                
-
 
 
 

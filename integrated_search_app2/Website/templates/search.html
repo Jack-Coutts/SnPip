@@ -80,17 +80,10 @@
 <br>
 <br>
 
-<div class="container" style="height: 500px;overflow: scroll;">
-
-  {{df|safe}}
-
-</div>
-
-
-
 <center>
 <div class="alert alert-light">
   <strong>{{num_snps}}</strong> 
+  <strong>{{runtime}}</strong>
 </div>
 </center>
 
@@ -110,7 +103,7 @@
 
         <tr>
 
-          {% for header in headings %}
+          {% for header in head %}
           <th class="th-sm font-weight-bold">{{header}}</th>
           {% endfor %}
 
