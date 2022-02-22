@@ -1,32 +1,22 @@
 # import the app factory (the app)
 from Website import create_app
+# Import flask and associated packages 
 from flask import render_template, redirect, request, send_file, send_from_directory
-from flaskext.mysql import MySQL
-
+# MySQL connector to connect to and search db
 import mysql.connector 
 from mysql.connector import connect, Error
-
-
-from IPython.display import HTML
-
-import datetime
-import io
-from io import BytesIO 
-from io import StringIO
-
+# To time searches
 import time
 
-#from Website.functions import *
-
-
+# Start app
 app = create_app()
 
-
+# Set up a connection with the MySQL database
 try:
     mydb = mysql.connector.connect(host="localhost",
                                     user="root",
                                     password="password",
-                                    database="SnPip")
+                                    database="SnPip") # Database Name
 
     mycursor = mydb.cursor()
 except Error as e:
@@ -53,72 +43,76 @@ def documentation(): # this function will run whenever we go to this route
 @app.route('/search', methods=['GET', 'POST']) # this is the search page
 def search(): # this function will run whenever we go to this route
 
-        if request.method == "POST":
+        if request.method == "POST": # Wehn form is filled out and search button pressed
 
-            select=request.form['select']
+            select=request.form['select'] # The option selected from dopdown bar
 
             #Time how long it takes to run
             start_time = time.time()
 
 
             try:
-
+                # Create a list containing the population codes of selected populations
                 subpop=request.form.getlist('subpop')
 
             except:
 
+                # If no populations are selected
                 return 'You must select at least one population'
 
 
 
-            # If searching by snp name
+            # If searching by snp name (from select menu)
             if select == 'SNP Name':
 
+                # SNP Name refers to the text search bar - store that as a string
                 snp = request.form['snp']
 
-                # search by SNP
+                # Search the database to select info from SNP table
                 mycursor.execute("SELECT CHROM, POS, GENE, ID, REF, ALT FROM snp WHERE ID = %s ", [snp])
-                data = mycursor.fetchall()
-                head=['CHROM', 'POS', 'GENE', 'ID', 'REF', 'ALT']
+                data = mycursor.fetchall() # List containing extracted data
+                head=['CHROM', 'POS', 'GENE', 'ID', 'REF', 'ALT'] # Header of table displaying SNP info
 
-                for item in subpop:
+                for item in subpop: # Iterate over list of selected populations
 
-                    if item == 'BEB':
-
+                    if item == 'BEB': # If this population selected 
+                        # Search subpop table 
                         mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Bengali'", [snp])
-                        BEB = mycursor.fetchall()
-                        bhead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']
+                        BEB = mycursor.fetchall() # list containing extracted data
+                        bhead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']# Header of table displaying subpop info
 
 
-                    elif item == 'GBR':
-
+                    elif item == 'GBR': # If this population selected
+                        # Search subpop table 
                         mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'GBR'", [snp])
-                        GBR = mycursor.fetchall()
-                        ghead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']
+                        GBR = mycursor.fetchall() # list containing extracted data
+                        ghead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']# Header of table displaying subpop info
 
-                    elif item == 'CHB':
-
+                    elif item == 'CHB': # If this population selected
+                        # Search subpop table
                         mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'China'", [snp])
-                        CHB = mycursor.fetchall()
-                        chead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']
+                        CHB = mycursor.fetchall() # list containing extracted data
+                        chead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']# Header of table displaying subpop info
 
-                    elif item == 'PEL':
-
+                    elif item == 'PEL': # If this population selected
+                        # Search subpop table
                         mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Peru'", [snp])
-                        PEL = mycursor.fetchall()
-                        phead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']
+                        PEL = mycursor.fetchall() # list containing extracted data
+                        phead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF'] # Header of table displaying subpop info
 
-                    elif item == 'ESN':
-
+                    elif item == 'ESN': # If this population selected
+                        # Search subpop table
                         mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Nigeria'", [snp])
-                        ESN = mycursor.fetchall()
-                        ehead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']
+                        ESN = mycursor.fetchall() # list containing extracted data
+                        ehead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']# Header of table displaying subpop info
 
-                    else:
+                    else: # If item not one of our subpop skip it
                         pass
+                
+                # Return runtime of search/data extraction
+                runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')  
 
-                runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
-
+                # Return the search template with these vairables newly defined 
                 return render_template('search.html', 
                                         data=data, 
                                         BEB=BEB, 
@@ -135,65 +129,67 @@ def search(): # this function will run whenever we go to this route
                                         runtime=runtime
                                         )
             
-            # If searching by Gene name
+            # If searching by Gene name (from select menu)
             if select == 'Gene Name':
-
+                # Store the gene name entered into the text search box as a string
                 gene = request.form['snp'].upper()
 
+                # Search the SNP table for all SNPs in that gene - for counting
                 mycursor.execute("SELECT ID FROM snp WHERE GENE LIKE %s ", [gene])
-                snps = len(mycursor.fetchall())
-                num_snps = ('Number of SNPs found in ' + gene.upper() + ': ' + (str(snps) + '.'))
+                snps = len(mycursor.fetchall()) # Store data in a list
+                # String infomring the number of SNPs in the gene - counter
+                num_snps = ('Number of SNPs found in ' + gene.upper() + ': ' + (str(snps) + '.')) 
 
-
-                # SNP info table
-
+                # SNP info table - search all infor for SNPs in gene
                 mycursor.execute("SELECT CHROM, POS, GENE, ID, REF, ALT FROM snp WHERE GENE LIKE %s ", [gene])
-                data = mycursor.fetchall()
-                head=('Chromosome','Position', 'Gene','rsID','Reference','Alternate')
-                SNPtitle='SNP Information'
+                data = mycursor.fetchall() # Store data in a string
+                head=('Chromosome','Position', 'Gene','rsID','Reference','Alternate') # Table head - columns selected 
+                SNPtitle='SNP Information' # Table title 
 
-                for item in subpop:
+                for item in subpop: # iterate list of selected populations
 
-                    if item == 'BEB':
-
+                    if item == 'BEB': # If this population selected
+                        # Select info from subpop where the ID is in a list of IDs that are found in the gene
                         mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
-                        BEB = mycursor.fetchall()
-                        bhead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        btitle='Bengali'
+                        BEB = mycursor.fetchall()  # list containing extracted data
+                        bhead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')# Header of table displaying subpop info
+                        btitle='Bengali' # Table title 
 
-                    elif item == 'GBR':
-
+                    elif item == 'GBR': # If this population selected
+                        # Select info from subpop where the ID is in a list of IDs that are found in the gene
                         mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
-                        GBR = mycursor.fetchall()
-                        ghead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        gtitle='Great Britain'
+                        GBR = mycursor.fetchall() # list containing extracted data
+                        ghead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        gtitle='Great Britain' # Table title 
 
-                    elif item == 'CHB':
-
+                    elif item == 'CHB': # If this population selected
+                        # Select info from subpop where the ID is in a list of IDs that are found in the gene
                         mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
-                        CHB = mycursor.fetchall()
-                        chead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        ctitle='China'
+                        CHB = mycursor.fetchall() # list containing extracted data
+                        chead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        ctitle='China' # Table title 
 
-                    elif item == 'PEL':
-
+                    elif item == 'PEL': # If this population selected
+                        # Select info from subpop where the ID is in a list of IDs that are found in the gene
                         mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
-                        PEL = mycursor.fetchall()
-                        phead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        ptitle='Peru'
+                        PEL = mycursor.fetchall() # list containing extracted data
+                        phead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        ptitle='Peru' # Table title 
                     
-                    elif item == 'ESN':
-
+                    elif item == 'ESN': # If this population selected
+                        # Select info from subpop where the ID is in a list of IDs that are found in the gene
                         mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
-                        ESN = mycursor.fetchall()
-                        ehead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        etitle='Nigeria'
+                        ESN = mycursor.fetchall()  # list containing extracted data
+                        ehead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        etitle='Nigeria'  # Table title 
                     
                     else:
                         pass
-
+                
+                # Return runtime of search/data extraction
                 runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
 
+                # Return the search template with these vairables newly defined 
                 return render_template('search.html',
                                         data=data, 
                                         SNPtitle=SNPtitle, 
@@ -216,65 +212,72 @@ def search(): # this function will run whenever we go to this route
                                         num_snps=num_snps,
                                         runtime=runtime)
 
-            # If searching by Location
+            # If searching by location/position (from select menu)
             if select == 'Location':
-
+                # Store the gene name entered into the text search box as a string
                 location = request.form['snp']
+                # Split the tring at the dash 
                 location=location.split('-')
+                # Turn the two numbers in the list in to inetgers and seperate them
                 areastart=int(location[0])
                 areaend=int(location[1])
 
+                # Search the SNP table for all SNPs in that gene - for counting
                 mycursor.execute("SELECT ID FROM snp WHERE %s <= POS AND POS <= %s ", (areastart, areaend ))
-                snps = len(mycursor.fetchall())
+                snps = len(mycursor.fetchall()) # Store data in a list
+                # String infomring the number of SNPs in the gene - counter
                 num_snps = ('Number of SNPs found in the range of ' + str(areastart) + ' - ' + str(areaend) + ': ' + (str(snps) + '.'))
 
+                # SNP info table - search all infor for SNPs in position windown
                 mycursor.execute("SELECT CHROM, POS, GENE, ID, REF, ALT FROM snp WHERE %s <= POS AND POS <= %s ", (areastart, areaend ))
-                data = mycursor.fetchall()
-                headings=('Chromosome','Position', 'Gene','rsID','Reference','Alternate')
-                SNPtitle='SNP Information'
+                data = mycursor.fetchall() # Store data in a string
+                headings=('Chromosome','Position', 'Gene','rsID','Reference','Alternate') # Table head - columns selected 
+                SNPtitle='SNP Information'  # Table title 
 
-                for item in subpop:
+                for item in subpop: # iterate list of selected populations
 
-                    if item == 'BEB':
-
+                    if item == 'BEB': # If this population selected
+                        # Select info from subpop where the ID is in a list of IDs that are found in the position window
                         mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
-                        BEB = mycursor.fetchall()
-                        bhead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        btitle='Bengali'
+                        BEB = mycursor.fetchall() # list containing extracted data
+                        bhead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        btitle='Bengali' # Table title 
 
-                    elif item == 'GBR':
-
+                    elif item == 'GBR': # If this population selected
+                        # Select info from subpop where the ID is in a list of IDs that are found in the position window
                         mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
-                        GBR = mycursor.fetchall()
-                        ghead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        gtitle='Great Britain'
+                        GBR = mycursor.fetchall() # list containing extracted data
+                        ghead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        gtitle='Great Britain' # Table title
 
-                    elif item == 'CHB':
-
+                    elif item == 'CHB': # If this population selected
+                        # Select info from subpop where the ID is in a list of IDs that are found in the position window
                         mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
-                        CHB = mycursor.fetchall()
-                        chead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        ctitle='China'
+                        CHB = mycursor.fetchall() # list containing extracted data
+                        chead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        ctitle='China' # Table title
 
-                    elif item == 'PEL':
-
+                    elif item == 'PEL': # If this population selected
+                        # Select info from subpop where the ID is in a list of IDs that are found in the position window
                         mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
-                        PEL = mycursor.fetchall()
-                        phead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        ptitle='Peru'
+                        PEL = mycursor.fetchall() # list containing extracted data
+                        phead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        ptitle='Peru' # Table title
       
-                    elif item == 'ESN':
-
+                    elif item == 'ESN': # If this population selected
+                        # Select info from subpop where the ID is in a list of IDs that are found in the position window
                         mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
-                        ESN = mycursor.fetchall()
-                        ehead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')
-                        etitle='Nigeria'
+                        ESN = mycursor.fetchall() # list containing extracted data
+                        ehead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        etitle='Nigeria' # Table title
 
                     else:
                         pass
-
+                
+                # Return runtime of search/data extraction
                 runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
 
+                # Return the search template with these vairables newly defined
                 return render_template('search.html',
                                         data=data, 
                                         SNPtitle=SNPtitle, 
@@ -299,17 +302,12 @@ def search(): # this function will run whenever we go to this route
 
                 
 
-
-
             # If search by not specified
             else:
                 pass
 
-
+        # Return search template
         return render_template('search.html')
-
-
-
 
 
 
