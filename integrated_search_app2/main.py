@@ -18,7 +18,7 @@ try:
                                     password="password",
                                     database="SnPip") # Database Name
 
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(buffered=True)
 except Error as e:
     print(e)
 
