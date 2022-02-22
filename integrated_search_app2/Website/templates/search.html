@@ -1,10 +1,9 @@
+<!-- Jinija syntax - extending the base template by adding content in the block content section-->
 {%extends "base.html" %}
 {% block title %} Search SNPs {% endblock %}
 {% block content %}
 
-
-
-
+<!-- Heading text at the top of the page -->
 <center>
 <div class='mt-sm-3'style="margin:auto;max-width:1000px">
     <h2>Search for SNPs</h2>
@@ -14,19 +13,21 @@
 </div>
 </center>
 
+<!-- Create the search form with all of the user selection parameters -->
 <form class="example" method="post" action="/search" 
  style="margin:auto;max-width:600px">
+  <!-- Text search bar-->
    <input type="text" 
            placeholder="E.g. rs999980 or ACTR3BP7 or 11124625-15303188" 
            name="snp" class="form-control">
-   
+   <!-- Select dropdown menu -->
    <select name="select" required class="custom-select" >
        <option disabled selected value="">Search by</option>
        <option value="SNP Name">SNP Name</option>
        <option value="Gene Name">Gene Name</option>
        <option value="Location">Location</option>
    </select>
-
+    <!-- Population checkboxes -->
     <div class='form-control' required>
   
       <label>Populations: </label>
@@ -52,18 +53,14 @@
     </div>
 
   </div>
-
-   
-
+    <!-- Search/Submit button -->
    <div>
         <button type="submit" class="btn btn-primary">Search</button>
     </div>
 
-   <!--<button type="submit"><i class="fa fa-search"></i>-->
-   </button>
 </form>
 
-
+<!-- Download button -->
 <div class="container text-right" style="padding-right: 50px; padding-top: 50px;">
   <a href="#" id="download" class= "btn btn-danger" > Download! </a>
 </div>
@@ -72,6 +69,7 @@
 <br>
 <br>
 
+<!-- Text stating search time and SNP number -->
 <center>
 <div class="alert alert-light">
   <strong>{{num_snps}}</strong> 
@@ -81,11 +79,15 @@
 
 <br>
 
-<!-- Data is a list of rows (each row is a nested list)-->
-
+<!-- Table heading -->
 <center>
 <h3>{{SNPtitle}}</h3>
 </center>
+
+<!-- One table for SNP info and then a table per subpop -->
+
+<!-- Table in which each search row is iterated over and added to the table rows/cells -->
+<!-- In a conatainer to allow table scrolling -->
 
 <div class="container" style="height: 500px;overflow: scroll;">
   <table class=" table table-striped table-bordered table-sm " >
@@ -123,10 +125,14 @@
 
 <br>
 
+<!-- Table heading -->
 
 <center>
 <h3>{{btitle}}</h3>
 </center>
+
+<!-- Table in which each search row is iterated over and added to the table rows/cells -->
+<!-- In a conatainer to allow table scrolling -->
 
 <div class="container" style="height: 400px;overflow: scroll;">
   <table id="dtBasicExample" class="table table-striped table-bordered table-sm ">
@@ -163,9 +169,14 @@
 
 <br>
 
+<!-- Table heading -->
+
 <center>
 <h3>{{gtitle}}</h3>
 </center>
+
+<!-- Table in which each search row is iterated over and added to the table rows/cells -->
+<!-- In a conatainer to allow table scrolling -->
 
 <div class="container" style="height: 400px;overflow: scroll;">
   <table class="table table-striped table-bordered table-sm ">
@@ -202,9 +213,14 @@
 
 <br>
 
+<!-- Table heading -->
+
 <center>
 <h3>{{ctitle}}</h3>
 </center>
+
+<!-- Table in which each search row is iterated over and added to the table rows/cells -->
+<!-- In a conatainer to allow table scrolling -->
 
 <div class="container" style="height: 400px;overflow: scroll;">
   <table class="table table-striped table-bordered table-sm ">
@@ -241,9 +257,14 @@
 
 <br>
 
+<!-- Table heading -->
+
 <center>
 <h3>{{ptitle}}</h3>
 </center>
+
+<!-- Table in which each search row is iterated over and added to the table rows/cells -->
+<!-- In a conatainer to allow table scrolling -->
 
 <div class="container" style="height: 400px;overflow: scroll;">
   <table class="table table-striped table-bordered table-sm ">
@@ -280,9 +301,14 @@
 
 <br>
 
+<!-- Table heading -->
+
 <center>
 <h3>{{etitle}}</h3>
 </center>
+
+<!-- Table in which each search row is iterated over and added to the table rows/cells -->
+<!-- In a conatainer to allow table scrolling -->
 
 <div class="container" style="height: 400px;overflow: scroll;">
   <table class="table table-striped table-bordered table-sm ">
@@ -316,10 +342,6 @@
   </table>
 
 </div>
-
-
-
-
 
 
 
