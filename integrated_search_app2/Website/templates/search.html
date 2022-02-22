@@ -80,7 +80,9 @@
 
 <br>
 
+
 <!-- One table for SNP info and then a table per subpop -->
+<!-- Tables are conatined in modals which can be selected -->
 
 <!-- Table in which each search row is iterated over and added to the table rows/cells -->
 <!-- In a conatainer to allow table scrolling -->
@@ -453,5 +455,23 @@
 </div>
 
 </center>
+
+<br>
+
+<!-- Three stats tables in a row, one of which is Hudson FST -->
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-4">
+      {{fst|safe}}
+    </div>
+    <div class="col-sm-4">
+      {{fst|safe}}
+    </div>
+    <div class="col-sm-4">
+      {{fst|safe}}
+    </div>
+  </div>
+</div>
 
 {% endblock %}

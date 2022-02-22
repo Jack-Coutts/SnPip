@@ -8,9 +8,11 @@ import mysql.connector
 from mysql.connector import connect, Error
 # To time searches
 import time
-
-from tabulate import tabulate
+# import pandas 
 import pandas as pd
+
+#Import stat functions
+from Website.stat_functions import *
 
 # Start app
 app = create_app()
@@ -97,7 +99,7 @@ def search(): # this function will run whenever we go to this route
 
                     if item == 'BEB': # If this population selected 
                         # Search subpop table 
-                        mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Bengali'", [snp])
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Bengali'", [snp])
                         BEB = mycursor.fetchall() # list containing extracted data
                         BEB=pd.DataFrame(BEB).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
                         bhead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']# Header of table displaying subpop info
@@ -105,28 +107,28 @@ def search(): # this function will run whenever we go to this route
 
                     elif item == 'GBR': # If this population selected
                         # Search subpop table 
-                        mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'GBR'", [snp])
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'GBR'", [snp])
                         GBR = mycursor.fetchall() # list containing extracted data
                         GBR=pd.DataFrame(GBR).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
                         ghead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']# Header of table displaying subpop info
 
                     elif item == 'CHB': # If this population selected
                         # Search subpop table
-                        mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'China'", [snp])
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'China'", [snp])
                         CHB = mycursor.fetchall() # list containing extracted data
                         CHB=pd.DataFrame(CHB).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
                         chead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']# Header of table displaying subpop info
 
                     elif item == 'PEL': # If this population selected
                         # Search subpop table
-                        mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Peru'", [snp])
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Peru'", [snp])
                         PEL = mycursor.fetchall() # list containing extracted data
                         PEL=pd.DataFrame(PEL).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
                         phead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF'] # Header of table displaying subpop info
 
                     elif item == 'ESN': # If this population selected
                         # Search subpop table
-                        mycursor.execute("SELECT ID, SUBPOP, AF, ('ALT|REF'), ('REF|ALT'), ('ALT|ALT'), ('REF|REF') FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Nigeria'", [snp])
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Nigeria'", [snp])
                         ESN = mycursor.fetchall() # list containing extracted data
                         ESN=pd.DataFrame(ESN).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
                         ehead=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']# Header of table displaying subpop info
@@ -173,51 +175,60 @@ def search(): # this function will run whenever we go to this route
                 head=('Chromosome','Position', 'Gene','rsID','Reference','Alternate') # Table head - columns selected 
                 SNPtitle='SNP Information' # Table title 
 
+                
+
                 for item in subpop: # iterate list of selected populations
 
                     if item == 'BEB': # If this population selected
                         # Select info from subpop where the ID is in a list of IDs that are found in the gene
-                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
                         BEB = mycursor.fetchall()  # list containing extracted data
                         BEB=pd.DataFrame(BEB).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
-                        bhead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')# Header of table displaying subpop info
+                        bhead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF')# Header of table displaying subpop info
                         btitle='Bengali' # Table title 
 
                     elif item == 'GBR': # If this population selected
                         # Select info from subpop where the ID is in a list of IDs that are found in the gene
-                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
                         GBR = mycursor.fetchall() # list containing extracted data
                         GBR=pd.DataFrame(GBR).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
-                        ghead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        ghead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
                         gtitle='Great Britain' # Table title 
 
                     elif item == 'CHB': # If this population selected
                         # Select info from subpop where the ID is in a list of IDs that are found in the gene
-                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
                         CHB = mycursor.fetchall() # list containing extracted data
                         CHB=pd.DataFrame(CHB).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
-                        chead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        chead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
                         ctitle='China' # Table title 
 
                     elif item == 'PEL': # If this population selected
                         # Select info from subpop where the ID is in a list of IDs that are found in the gene
-                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
                         PEL = mycursor.fetchall() # list containing extracted data
                         PEL=pd.DataFrame(PEL).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
-                        phead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        phead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
                         ptitle='Peru' # Table title 
                     
                     elif item == 'ESN': # If this population selected
                         # Select info from subpop where the ID is in a list of IDs that are found in the gene
-                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
                         ESN = mycursor.fetchall()  # list containing extracted data
                         ESN=pd.DataFrame(ESN).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
-                        ehead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        ehead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
                         etitle='Nigeria'  # Table title 
                     
                     else:
                         pass
                 
+                # Select genotype string for SNPs in searched gene
+                mycursor.execute("SELECT GT FROM snp WHERE GENE LIKE %s ", [gene])
+                geno_list = mycursor.fetchall()
+
+                # Run all fst comparisons
+                fst = all_hudson_fsts(geno_list, subpop)
+
                 # Return runtime of search/data extraction
                 runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
 
@@ -242,7 +253,10 @@ def search(): # this function will run whenever we go to this route
                                         ptitle=ptitle,
                                         etitle=etitle,
                                         num_snps=num_snps,
-                                        runtime=runtime)
+                                        runtime=runtime,
+                                        fst=fst)
+
+                                       
 
             # If searching by location/position (from select menu)
             if select == 'Location':
@@ -271,46 +285,53 @@ def search(): # this function will run whenever we go to this route
 
                     if item == 'BEB': # If this population selected
                         # Select info from subpop where the ID is in a list of IDs that are found in the position window
-                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
                         BEB = mycursor.fetchall() # list containing extracted data
                         BEB=pd.DataFrame(BEB).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
-                        bhead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        bhead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
                         btitle='Bengali' # Table title 
 
                     elif item == 'GBR': # If this population selected
                         # Select info from subpop where the ID is in a list of IDs that are found in the position window
-                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
                         GBR = mycursor.fetchall() # list containing extracted data
                         GBR=pd.DataFrame(GBR).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
-                        ghead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        ghead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
                         gtitle='Great Britain' # Table title
 
                     elif item == 'CHB': # If this population selected
                         # Select info from subpop where the ID is in a list of IDs that are found in the position window
-                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
                         CHB = mycursor.fetchall() # list containing extracted data
                         CHB=pd.DataFrame(CHB).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
-                        chead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        chead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
                         ctitle='China' # Table title
 
                     elif item == 'PEL': # If this population selected
                         # Select info from subpop where the ID is in a list of IDs that are found in the position window
-                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
                         PEL = mycursor.fetchall() # list containing extracted data
                         PEL=pd.DataFrame(PEL).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
-                        phead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        phead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
                         ptitle='Peru' # Table title
       
                     elif item == 'ESN': # If this population selected
                         # Select info from subpop where the ID is in a list of IDs that are found in the position window
-                        mycursor.execute("SELECT * FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                        mycursor.execute("SELECT ID, SUBPOP, AF, ALTREF, REFALT, ALTALT, REFREF FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
                         ESN = mycursor.fetchall() # list containing extracted data
                         ESN=pd.DataFrame(ESN).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=False)
-                        ehead=('PK','rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
+                        ehead=('rsID','Subpopulation','Allele Frequency','ALT|REF','REF|ALT', 'ALT|ALT', 'REF|REF') # Header of table displaying subpop info
                         etitle='Nigeria' # Table title
 
                     else:
                         pass
+                
+                # Select genotype string for SNPs in searched gene
+                mycursor.execute("SELECT GT FROM snp WHERE ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                geno_list = mycursor.fetchall()
+
+                # Run all fst comparisons
+                fst = all_hudson_fsts(geno_list, subpop)
                 
                 # Return runtime of search/data extraction
                 runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
@@ -336,7 +357,8 @@ def search(): # this function will run whenever we go to this route
                                         ptitle=ptitle,
                                         etitle=etitle,
                                         num_snps=num_snps,
-                                        runtime=runtime)
+                                        runtime=runtime,
+                                        fst=fst)
 
                 
 
