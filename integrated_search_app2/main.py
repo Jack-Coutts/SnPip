@@ -273,6 +273,10 @@ def search(): # this function will run whenever we go to this route
                 
                 # Calculate shannon diversity
                 Shann=Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop)
+
+                # Tajimas D
+
+                Taj=Tajimas(array, subpop)
                 
                 # Return runtime of search/data extraction
                 runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
@@ -300,7 +304,8 @@ def search(): # this function will run whenever we go to this route
                                         num_snps=num_snps,
                                         runtime=runtime,
                                         fst=fst,
-                                        Shann=Shann)
+                                        Shann=Shann,
+                                        Taj=Taj)
 
                                        
 
@@ -424,6 +429,8 @@ def search(): # this function will run whenever we go to this route
                 # Calculate shannon diversity
                 Shann=Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop)
 
+                # Tajimas D
+                Taj=Tajimas(array, subpop)
                 
                 # Return runtime of search/data extraction
                 runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
@@ -451,7 +458,8 @@ def search(): # this function will run whenever we go to this route
                                         num_snps=num_snps,
                                         runtime=runtime,
                                         fst=fst,
-                                        Shann=Shann)
+                                        Shann=Shann,
+                                        Taj=Taj)
 
                 
 

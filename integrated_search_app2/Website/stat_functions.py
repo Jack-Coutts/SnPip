@@ -6,6 +6,9 @@ import numpy as np
 import pandas as pd
 import allel
 
+#Tajimas D
+from itertools import combinations
+
 
 
 def makeArray(strings):
@@ -185,7 +188,7 @@ def Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop):
             poplst.append(PAF)
         
         elif item == 'ESN':
-            poplst.append(GAF)
+            poplst.append(EAF)
         else:
             pass
 
@@ -212,10 +215,58 @@ def Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop):
     zip_iterator = zip(snlst, shnnlst)
     dictionary=dict(zip_iterator)
 
-    Shannon = pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for selected populations']).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    Shannon = pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations']).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
 
     return Shannon
 
+# Tajimas D
+
+def Tajimas(genotype_array, subpop):
+
+    # extract genotype array into samples
+    bebG, cheG, esnG, gbrG, pelG = genotype_array
+
+    # ONly retain selected populations
+    poplst=[]
+    poplst2=[]
+    for item in subpop:
+        if item == 'BEB':
+            poplst.append('Bengali')
+            poplst2.append(bebG)
+
+        elif item == 'GBR':
+            poplst.append('Great Britain')
+            poplst2.append(gbrG)
+        
+        elif item == 'CHB':
+            poplst.append('China')
+            poplst2.append(cheG)
+
+        elif item == 'PEL':
+            poplst.append('Peru')
+            poplst2.append(pelG)
+        
+        elif item == 'ESN':
+            poplst.append('Nigeria')
+            poplst2.append(esnG)
+        else:
+            pass
+
+
+
+    Tajima_D = {}
+    
+    for pair,val in zip( combinations([*poplst],1), combinations([*poplst2],1)):
+        
+        ac = allel.GenotypeArray(val[0]).count_alleles()
+       
+        fst = allel.tajima_d(ac)
+    
+        Tajima_D.update({str(pair).strip("(''),") : fst})
+
+    Tajima = pd.DataFrame(list(Tajima_D.items()),columns = ['Subpopulation',"Tajima's D for Selected Population"]).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    
+    return Tajima
 
     
 
