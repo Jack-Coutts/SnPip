@@ -1,6 +1,12 @@
+# Shannon Diveristy
+import math
+from math import log as ln
+# FST
 import numpy as np
 import pandas as pd
 import allel
+
+
 
 def makeArray(strings):
     
@@ -139,7 +145,83 @@ def all_hudson_fsts(genotype_list, subpop):
     else:
         pass
 
-    FSTs = pd.DataFrame(list(fsts.items()),columns = ['Populations','Hudson FST']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    FSTs = pd.DataFrame(list(fsts.items()),columns = ['Populations','Hudson FST']).to_html(classes=' content-area clusterize-content table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
 
     return FSTs
+
+# Shannon Diveristy 
+def sdi(af): #A list of allele frequencies per snp 
+    index = []
+  
+    for x in af:
+        if x > 0:
+            Pi = (x) * ln(x)
+            index.append(Pi)
+        else:
+            pass
+    H = -sum(index)
+    return H
+
+def Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop):
+
+    # Turn extracted list of tuples of strings into a list of floats
+    BAF=[float(a) for item in BAF for a in item]
+    GAF=[float(a) for item in GAF for a in item]
+    CAF=[float(a) for item in CAF for a in item]
+    PAF=[float(a) for item in PAF for a in item]
+    EAF=[float(a) for item in EAF for a in item]
+
+
+    #list to be zipped together
+    poplst=[]
+    for item in subpop:
+        if item == 'BEB':
+            poplst.append(BAF)
+
+        elif item == 'GBR':
+            poplst.append(GAF)
+        
+        elif item == 'CHB':
+            poplst.append(CAF)
+
+        elif item == 'PEL':
+            poplst.append(PAF)
+        
+        elif item == 'ESN':
+            poplst.append(GAF)
+        else:
+            pass
+
+    # Combine lists together into a nested list so that each sublist contains the AF for each subpop
+    afs=[list(l) for l in zip(*poplst)]
+
+    allsnp=allsnps # List of tuples the SNPs
+    # Convert list of tuples of strings to list of strings
+    allsnps=[a for item in allsnp for a in item]
+
+    snlst=[]
+    for item in allsnps:
+
+        snlst.append(item)
+
+    shnnlst=[]
+
+    for item in afs:
+
+        shnn=sdi(item)
+        shnnlst.append(shnn)
+
+    
+    zip_iterator = zip(snlst, shnnlst)
+    dictionary=dict(zip_iterator)
+
+    Shannon = pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for selected populations']).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+
+    return Shannon
+
+
+    
+
+        
+
 

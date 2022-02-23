@@ -163,7 +163,8 @@ def search(): # this function will run whenever we go to this route
 
                 # Search the SNP table for all SNPs in that gene - for counting
                 mycursor.execute("SELECT ID FROM snp WHERE GENE LIKE %s ", [gene])
-                snps = len(mycursor.fetchall()) # Store data in a list
+                allsnps=mycursor.fetchall()
+                snps = len(allsnps) # Store data in a list
                 # String infomring the number of SNPs in the gene - counter
                 num_snps = ('Number of SNPs found in ' + gene.upper() + ': ' + (str(snps) + '.')) 
 
@@ -222,13 +223,54 @@ def search(): # this function will run whenever we go to this route
                     else:
                         pass
                 
+                ### FST ###
+
                 # Select genotype string for SNPs in searched gene
                 mycursor.execute("SELECT GT FROM snp WHERE GENE LIKE %s ", [gene])
                 geno_list = mycursor.fetchall()
 
                 # Run all fst comparisons
                 fst = all_hudson_fsts(geno_list, subpop)
+                
+                ### Shannon Diversity ###
 
+                # Empty lists of tuples of strings if  population not selected
+                BAF=[('1')]
+                GAF=[('1')]
+                CAF=[('1')]
+                PAF=[('1')]
+                EAF=[('1')]
+
+                # Extract allele frequency data from databse 
+                for item in subpop:
+
+                    if item == 'BEB':
+                        mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        BAF=mycursor.fetchall() #list of tuples
+
+                    elif item == 'GBR':
+                        mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        GAF=mycursor.fetchall() #list of tuples
+                    
+                    elif item == 'CHB':
+                        mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        CAF=mycursor.fetchall() #list of tuples
+
+                    elif item == 'PEL':
+                        mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        PAF=mycursor.fetchall() #list of tuples
+                    
+                    elif item == 'ESN':
+                        mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
+                        EAF=mycursor.fetchall() #list of tuples
+                    
+                    else:
+                        pass
+                
+                
+                # Calculate shannon diversity
+                Shann=Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop)
+                
                 # Return runtime of search/data extraction
                 runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
 
@@ -254,7 +296,8 @@ def search(): # this function will run whenever we go to this route
                                         etitle=etitle,
                                         num_snps=num_snps,
                                         runtime=runtime,
-                                        fst=fst)
+                                        fst=fst,
+                                        Shann=Shann)
 
                                        
 
@@ -326,12 +369,18 @@ def search(): # this function will run whenever we go to this route
                     else:
                         pass
                 
+                ### FST ###
+
                 # Select genotype string for SNPs in searched gene
                 mycursor.execute("SELECT GT FROM snp WHERE ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
                 geno_list = mycursor.fetchall()
 
                 # Run all fst comparisons
                 fst = all_hudson_fsts(geno_list, subpop)
+
+                ### Shannon DIversity ###
+
+                
                 
                 # Return runtime of search/data extraction
                 runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
