@@ -81,13 +81,10 @@ def moving_hudson(pop_array1, pop_array2, moving_window):
     return mfst
 
 # Get the FST for all comparisons of the populations selected
-def all_hudson_fsts(genotype_list, subpop):
-
-    # create gt arrays from the gt strings
-    g=makeArray(genotype_list)
+def all_hudson_fsts(array, subpop):
 
     # extract genotype array into samples
-    bebG, chbG, esnG, gbrG, pelG = g
+    bebG, chbG, esnG, gbrG, pelG = array
 
     fsts={}
 

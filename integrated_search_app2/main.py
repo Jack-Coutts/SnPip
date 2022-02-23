@@ -229,8 +229,11 @@ def search(): # this function will run whenever we go to this route
                 mycursor.execute("SELECT GT FROM snp WHERE GENE LIKE %s ", [gene])
                 geno_list = mycursor.fetchall()
 
+                #Make genotype array
+                array=makeArray(geno_list)
+
                 # Run all fst comparisons
-                fst = all_hudson_fsts(geno_list, subpop)
+                fst = all_hudson_fsts(array, subpop)
                 
                 ### Shannon Diversity ###
 
@@ -376,8 +379,11 @@ def search(): # this function will run whenever we go to this route
                 mycursor.execute("SELECT GT FROM snp WHERE ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
                 geno_list = mycursor.fetchall()
 
+                # Make genotype array
+                array=makeArray(geno_list)
+
                 # Run all fst comparisons
-                fst = all_hudson_fsts(geno_list, subpop)
+                fst = all_hudson_fsts(array, subpop)
 
                 ### Shannon Diversity ###
 
