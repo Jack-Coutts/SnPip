@@ -77,18 +77,16 @@
 		<ol>
 			<li>Remove SNPs with duplicate rsIDs. </li>
 			<li>Remove Indels, and multiallelic sites </li>
-			<li> Shannon Diversity  </li>
-			<li> Run PLINK variant filtering:
-				plink --bfile [prefix to population specific genotypes] --maf 0.01 --hwe 10e-6 --geno 0.1 --make-bed --out [SNPsnap QC PLINK files] see details for commando at PLINK 1.9's documentation for maf, hwe and geno.  </li>
+			<li> Run PLINK variant filtering </li>
 			<li> Remove SNPs with duplicate chromosomal coordinates.   </li>
 		
 		</ol>
 
 		<br>
 
-		<h4> SNPsnap Super Population Definitions </h4>
+		<h4> Population and Sub-population </h4>
 
-		<p> SNPsnap's super population definitions are based on the following 1000G cohorts: </p>
+		<p> SNPip super population definitions are based on the following 1000G cohorts: </p>
 
 
 		<ul>
