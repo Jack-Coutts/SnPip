@@ -51,6 +51,39 @@ def variant_density(pos, windowsize):
                      spikemode="across")
     fig.update_yaxes(showspikes=True, spikecolor="Black", spikethickness=2)
     fig.update_layout(spikedistance=1000, hoverdistance=100)
+    
+    # NOTE: Adds sliding window to the graph
+    fig.update_layout(
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=200000,
+                         label="200000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=400000,
+                         label="400000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=600000,
+                         label="600000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=800000,
+                         label="800000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(step="all")
+                ])
+            ),
+            rangeslider=dict(
+                visible=True
+            ),
+            type="linear"
+        )
+    )
+
+    fig.show()
 
     fig.show()
 
