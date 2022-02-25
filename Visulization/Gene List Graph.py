@@ -89,6 +89,9 @@ fig.update_layout(title={'text': "Gene Map",
                   title_font_family="Times New Roman",
                   title_font_color="Black")
 
+# NOTE: Adds a line at the input
+fig.add_vline(x=input, line_width=3, line_dash="dash", line_color="gray")
+
 # NOTE: Creates a range slider
 fig.update_layout(
     xaxis=dict(
