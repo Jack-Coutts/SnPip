@@ -117,6 +117,9 @@ def gene_list_graph(position, database, increment_size):
             type="linear"
         )
     )
+
+    # note: Adds a line at the input
+    fig.add_vline(x=position, line_width=2, line_dash="dash", line_color="gray")
     
     a=pio.to_html(fig)
 
@@ -169,17 +172,40 @@ def snp_map(windowsize, database):
     fig.update_yaxes(showspikes=True, spikecolor="Black", spikethickness=2)
     fig.update_layout(spikedistance=1000, hoverdistance=100)
 
+    # note: Adds sliding window to the graph
+    fig.update_layout(
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=200000,
+                         label="200000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=400000,
+                         label="400000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=600000,
+                         label="600000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=800000,
+                         label="800000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(step="all")
+                ])
+            ),
+            rangeslider=dict(
+                visible=True
+            ),
+            type="linear"
+        )
+    )
+
     graph=pio.to_html(fig)
 
     return graph
-
-
-
-
-
-
-
-
 
 
 
@@ -447,6 +473,101 @@ def Tajimas(genotype_array, subpop):
 
     
 
-        
+def hudson_sliding(areastart, areaend, database, pre_array):
+
+    windowsize=(areaend-areastart)/15
+
+    df = pd.read_sql(('SELECT POS, GENE, ID FROM snp WHERE %s <= POS AND POS <= %s', (areastart, areaend )), database)
+
+    pos = df['POS'][:]
+
+    # note: Creates the windowsize
+    bin = np.arange(0, pos.max(), windowsize)
+
+    # note: Uses the window midpoints as x coordinate
+    x = (bin[1:] + bin[:-1])/2
+
+    # extract genotype array into samples
+    bebG, cheG, esnG, gbrG, pelG = pre_array
+
+    # Create a dictionary of 10 arrays - one for each population comparison
+    FSTs = {}
+    
+    for pair,val in zip( combinations(['bebG','cheG','esnG','gbrG','pelG'],2), combinations([bebG,cheG,esnG,gbrG,pelG],2)):
+        ac1 = allel.GenotypeArray(val[0]).count_alleles()
+        ac2 = allel.GenotypeArray(val[1]).count_alleles()
+        fst = allel.moving_hudson_fst(ac1, ac2, 10)
+    
+        FSTs.update({str(pair).strip("(''),") : fst})
+
+
+
+
+
+
+
+    # note: Compute variant density in each window
+    h, _ = np.histogram(pos, bins=bin)
+    y = h / windowsize
+
+    # note: plots & configures the graph
+    fig = go.Figure(go.Line(x=x, y=y,
+                            hovertemplate=
+                            'Variant density (bp<sup>-1</sup>): %{y}' +
+                            '<br>Chromosome position (bp)<extra></extra>: %{x}'))
+    fig.update_traces(line_color='goldenrod')
+
+    # note: Centers the title and fonts
+    fig.update_layout(title={'text': "Raw Varient Density",
+                             'x':0.5,
+                             'xanchor': 'center',
+                             'yanchor': 'top'},
+                      xaxis_title="Chromosome position (bp)",
+                      yaxis_title="Variant density (bp<sup>-1</sup>)",
+                      font_family="Times New Roman",
+                      font_color="Black",
+                      title_font_family="Times New Roman",
+                      title_font_color="Black")
+
+    # note: Adds cross section cursor
+    fig.update_xaxes(showspikes=True, spikecolor="Grey", spikesnap="cursor",
+                     spikemode="across")
+    fig.update_yaxes(showspikes=True, spikecolor="Black", spikethickness=2)
+    fig.update_layout(spikedistance=1000, hoverdistance=100)
+
+    # note: Adds sliding window to the graph
+    fig.update_layout(
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=200000,
+                         label="200000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=400000,
+                         label="400000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=600000,
+                         label="600000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=800000,
+                         label="800000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(step="all")
+                ])
+            ),
+            rangeslider=dict(
+                visible=True
+            ),
+            type="linear"
+        )
+    )
+
+    graph=pio.to_html(fig)
+
+    return graph
 
 

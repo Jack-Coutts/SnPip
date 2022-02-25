@@ -60,11 +60,11 @@ def search(): # this function will run whenever we go to this route
         #Time how long it takes to run
         start_time = time.time()
 
-        BEB=''
-        GBR=''
-        CHB=''
-        PEL=''
-        ESN=''
+        BEB='Sub-Population not selected.'
+        GBR='Sub-Population not selected.'
+        CHB='Sub-Population not selected.'
+        PEL='Sub-Population not selected.'
+        ESN='Sub-Population not selected.'
         bhead=''
         ghead=''
         chead=''
@@ -95,6 +95,10 @@ def search(): # this function will run whenever we go to this route
             # If searching by snp name (from select menu)
             if select == 'SNP Name':
 
+                sp=str(subpop).strip("[]")
+                sp=sp.replace("'","")
+                Searched_pops='Sub-Populations searched: ' + sp + '.'
+
                 # Check that search item is in the databse
                 mycursor.execute("SELECT ID FROM snp") # Select all rsIDs from snp table
                 snptbl_rsIDs=mycursor.fetchall() # list of tuples of strings of all rsIDs
@@ -102,7 +106,6 @@ def search(): # this function will run whenever we go to this route
 
                 if select in snptbl_rsIDs:
 
-                
 
                     # SNP Name refers to the text search bar - store that as a string
                     snp = request.form['snp']
@@ -179,7 +182,8 @@ def search(): # this function will run whenever we go to this route
                                             phead=phead,
                                             ehead=ehead,
                                             runtime=runtime,
-                                            gene_map=gene_map
+                                            gene_map=gene_map,
+                                            Searched_pops=Searched_pops
                                             )
                 else:
 
@@ -189,6 +193,10 @@ def search(): # this function will run whenever we go to this route
             if select == 'Gene Name':
                 # Store the gene name entered into the text search box as a string
                 gene = request.form['snp'].upper()
+
+                sp=str(subpop).strip("[]")
+                sp=sp.replace("'","")
+                Searched_pops='Sub-Populations searched: ' + sp + '.'
 
 
                 # Check that search item is in the databse
@@ -350,7 +358,9 @@ def search(): # this function will run whenever we go to this route
                                             fst=fst,
                                             Shann=Shann,
                                             Taj=Taj,
-                                            gene_map=gene_map)
+                                            gene_map=gene_map,
+                                            Searched_pops=Searched_pops
+                                            )
 
 
                 else: # Gene not in database
@@ -367,6 +377,11 @@ def search(): # this function will run whenever we go to this route
                 # Turn the two numbers in the list in to inetgers and seperate them
                 areastart=int(location[0])
                 areaend=int(location[1])
+
+
+                sp=str(subpop).strip("[]")
+                sp=sp.replace("'","")
+                Searched_pops='Sub-Populations searched: ' + sp + '.'
 
                 # Check that search item is in the databse
                 mycursor.execute("SELECT POS FROM snp") # Select all positions from snp table
@@ -529,7 +544,8 @@ def search(): # this function will run whenever we go to this route
                                             fst=fst,
                                             Shann=Shann,
                                             Taj=Taj,
-                                            gene_map=gene_map)
+                                            gene_map=gene_map,
+                                            Searched_pops=Searched_pops)
 
                 else:
 
