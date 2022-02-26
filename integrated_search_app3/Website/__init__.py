@@ -9,6 +9,7 @@ from flask import Flask
 def create_app():
     # create flask application object
     app = Flask(__name__) # name is the current python module
+    app.config['SECRET_KEY'] = "Your_secret_string"
 
     return app # create Flask app
 
