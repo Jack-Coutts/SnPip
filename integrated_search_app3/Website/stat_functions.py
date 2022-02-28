@@ -349,7 +349,7 @@ def all_hudson_fsts(array, subpop):
     else:
         pass
 
-    FSTs = pd.DataFrame(list(fsts.items()),columns = ['Populations','Hudson FST']).to_html(classes=' content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    FSTs = pd.DataFrame(list(fsts.items()),columns = ['Populations','Average Hudson FST']).to_html(classes=' content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
 
     return FSTs
 

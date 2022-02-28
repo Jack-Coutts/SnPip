@@ -60,18 +60,14 @@
 </div>
 
 <!-- Download buttons -->
-<center>
-  <div class="btn-group" role="toolbar" aria-label="Toolbar with button groups">
-    <div class="container">
-      <button id="export" type="button" class="btn btn-danger btn-sm">Download FST!</button>
-      <button id="export2"  type="button" class="btn btn-danger btn-sm">Download Tajima's D!</button>
-      <button id="export1" type="button" class="btn btn-danger btn-sm">Download Shannon's Diversity Index!</button>
-    </div>
-  </div>
-  </center>
 
+<div class="container">
 
+  <button id="export" type="button" class="btn btn-danger btn-sm">Download FST!</button>
+
+</div>
 <!-- Three stats tables in a row, one of which is Hudson FST -->
+
 
 <div class="container-fluid">
   <div class="row">
@@ -90,9 +86,17 @@
 <br>
 <br>
 
+
+<div class="container">
+
+  <button id="export2" type="button" class="btn btn-danger btn-sm">Download Tajima's D!</button>
+
+</div>
+
+
 <div class="container-fluid">
   <div class="row">
-    <div class="clusterize clusterize-scroll col-sm-2">
+    <div class=" col-sm-2">
       {{Taj|safe}}
     </div>
     <div class="clusterize clusterize-scroll col-sm-10">
@@ -103,6 +107,12 @@
 
 <br>
 <br>
+
+<div class="container">
+
+  <button id="export1" type="button" class="btn btn-danger btn-sm">Download Shannon's Diversity Index!</button>
+
+</div>
 
 <div class="container-fluid">
   <div class="row">
