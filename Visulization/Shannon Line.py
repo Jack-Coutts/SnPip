@@ -4,6 +4,8 @@ import plotly.express as px
 
 os.chdir(r"C:\Users\yido6\Documents\Uni\Level 7\SnPip\Visulization")
 
+# NOTE: The shannon line graph function takes a df as the input
+# NOTE: the DF need the position of the snp as the first col
 df = pd.read_csv('Shannon.tsv', sep='\t')
 
 
