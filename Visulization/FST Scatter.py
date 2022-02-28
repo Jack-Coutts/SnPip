@@ -53,17 +53,24 @@ def FSTscatter(input, start, stop, step):
              (strink(n)+'-'+strink(min(n+step, stop)))
              for n in range(start, stop, step)
              ]
-    keydict = dict(zip(list(range(1, nstep+1, 1)), bounds))
+    # NOTE: Creates a list of nested keys from input dict
+    ik = []
+    for v in input.values():
+        for key in v.keys():
+            ik.append(key)
+    first = ik[0]
+    keydict = dict(zip(list(range(first, first+nstep, 1)), bounds))
+    print(keydict)
+
     # NOTE: Makes a nested dictionary
     nest = replace_keys(input, keydict)
-    print(nest)
+
     # NOTE: Creates df for graph
     df = pd.DataFrame.from_dict(nest, orient='index').stack().reset_index()
     df['Pop'] = df[['level_0', 'level_1']].agg('-'.join, axis=1)
     del df['level_0']
     del df['level_1']
     df.columns = ['Range', 'FST', 'Pop']
-    print(df)
 
     # NOTE: plots the scatter graph
     fig = px.scatter(df, x="Pop", y="FST", color="Range",
@@ -84,7 +91,6 @@ def FSTscatter(input, start, stop, step):
                       legend={'traceorder': 'reversed'},
                       showlegend=False,
                       yaxis_range=[-0.1, 0.5])
-
     fig.add_hline(y=0.12, line_width=2, line_dash="dash", line_color="gray")
 
     fig.show()
