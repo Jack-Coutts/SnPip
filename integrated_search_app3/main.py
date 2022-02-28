@@ -384,13 +384,8 @@ def search_out(): # this function will run whenever we go to this route
     CHB='Sub-Population not selected.'
     PEL='Sub-Population not selected.'
     ESN='Sub-Population not selected.'
+
     
-    sclick='Open Individual SNP Information'
-    bclick='Open BEB SNP Infomormation'
-    gclick='Open GBR SNP Infomormation'
-    cclick='Open CHB SNP Infomormation'
-    pclick='Open PEL SNP Infomormation'
-    eclick='Open ESN SNP Infomormation'
 
 
     try:
@@ -408,6 +403,33 @@ def search_out(): # this function will run whenever we go to this route
         return render_template('No_Subpop.html')
 
     else:
+
+
+        bclick=''
+        gclick=''
+        cclick=''
+        pclick=''
+        eclick=''
+        
+        for item in subpop:
+
+            if item == 'BEB':
+                bclick='Open BEB SNP Infomormation'
+
+            elif item == 'GBR':
+                gclick='Open GBR SNP Infomormation'
+
+            elif item == 'CHB':
+                cclick='Open CHB SNP Infomormation'
+            
+            elif item == 'PEL':
+                pclick='Open PEL SNP Infomormation'
+                
+            elif item == 'ESN':
+                eclick='Open ESN SNP Infomormation'
+            
+            else:
+                pass
 
         # If searching by snp name (from select menu)
         if select == 'SNP Name':
@@ -445,7 +467,12 @@ def search_out(): # this function will run whenever we go to this route
                 return render_template('search_out.html',
                                         runtime=runtime,
                                         gene_map=gene_map,
-                                        Searched_pops=Searched_pops
+                                        Searched_pops=Searched_pops,
+                                        bclick=bclick, 
+                                        gclick=gclick,
+                                        cclick=cclick,
+                                        pclick=pclick,
+                                        eclick=eclick
                                         )
             else:
 
@@ -538,7 +565,18 @@ def search_out(): # this function will run whenever we go to this route
                     else:
                         pass
                 
+
+                mycursor.execute("SELECT POS FROM snp WHERE GENE = %s",[gene])
+                positions=mycursor.fetchall()
+                positions=[float(a) for item in positions for a in item]
+
+                gd=fst_dict_calc(positions, array )
+
+                graph=FSTscatter(gd, int(positions[0]), int(positions[-1]), int(1000))
+                #graph=enumerate(sorted(positions))
                 
+                shiloh=[positions[0], positions[-1]]
+
                 # Calculate shannon diversity
                 Shann=Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop)
 
@@ -557,7 +595,16 @@ def search_out(): # this function will run whenever we go to this route
                                         Shann=Shann,
                                         Taj=Taj,
                                         gene_map=gene_map,
-                                        Searched_pops=Searched_pops
+                                        Searched_pops=Searched_pops,
+                                        bclick=bclick, 
+                                        gclick=gclick,
+                                        cclick=cclick,
+                                        pclick=pclick,
+                                        eclick=eclick,
+                                        graph=graph,
+                                        array=array,
+                                        gd=gd,
+                                        shiloh=shiloh
                                         )
 
 
@@ -680,7 +727,12 @@ def search_out(): # this function will run whenever we go to this route
                                         Shann=Shann,
                                         Taj=Taj,
                                         gene_map=gene_map,
-                                        Searched_pops=Searched_pops)
+                                        Searched_pops=Searched_pops,
+                                        bclick=bclick, 
+                                        gclick=gclick,
+                                        cclick=cclick,
+                                        pclick=pclick,
+                                        eclick=eclick)
 
             else:
 

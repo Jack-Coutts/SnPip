@@ -348,7 +348,7 @@ def all_hudson_fsts(array, subpop):
     else:
         pass
 
-    FSTs = pd.DataFrame(list(fsts.items()),columns = ['Populations','Hudson FST']).to_html(classes=' content-area clusterize-content table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    FSTs = pd.DataFrame(list(fsts.items()),columns = ['Populations','Hudson FST']).to_html(classes=' content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
 
     return FSTs
 
@@ -418,7 +418,7 @@ def Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop):
     zip_iterator = zip(snlst, shnnlst)
     dictionary=dict(zip_iterator)
 
-    Shannon = pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations']).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    Shannon = pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations']).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id1', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
 
     return Shannon
 
@@ -467,107 +467,159 @@ def Tajimas(genotype_array, subpop):
     
         Tajima_D.update({str(pair).strip("(''),") : fst})
 
-    Tajima = pd.DataFrame(list(Tajima_D.items()),columns = ['Subpopulation',"Tajima's D for Selected Population"]).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    Tajima = pd.DataFrame(list(Tajima_D.items()),columns = ['Subpopulation',"Tajima's D for Selected Population"]).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id2', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
     
     return Tajima
 
     
 
-def hudson_sliding(areastart, areaend, database, pre_array):
 
-    windowsize=(areaend-areastart)/15
 
-    df = pd.read_sql(('SELECT POS, GENE, ID FROM snp WHERE %s <= POS AND POS <= %s', (areastart, areaend )), database)
 
-    pos = df['POS'][:]
 
-    # note: Creates the windowsize
-    bin = np.arange(0, pos.max(), windowsize)
+# note: Converts 200000 to 2M for better legend formating
+def strink(num):
+    if len(str(num)) <= 5:
+        snum = str("{:.2f}".format(num/1000)+'k')
+        return snum
+    elif len(str(num)) >= 6:
+        snum = str("{:.2f}".format(num/1000000)+'M')
+        return snum
+    else:
+        pass
 
-    # note: Uses the window midpoints as x coordinate
-    x = (bin[1:] + bin[:-1])/2
 
+
+# note: Replaces the step keys in the input dict with their boundaries
+def replace_keys(old_dict, key_dict):
+    new_dict = {}
+    for key in old_dict.keys():
+        new_key = key_dict.get(key, key)
+        if isinstance(old_dict[key], dict):
+            new_dict[new_key] = replace_keys(old_dict[key], key_dict)
+        else:
+            new_dict[new_key] = old_dict[key]
+    return new_dict
+
+
+
+
+
+
+
+
+from itertools import combinations
+
+def calc_hudson_fst(array):
+    # passing sequences into makeArray function
+    g = array
     # extract genotype array into samples
-    bebG, cheG, esnG, gbrG, pelG = pre_array
-
-    # Create a dictionary of 10 arrays - one for each population comparison
+    bebG, cheG, esnG, gbrG, pelG = g
+    
     FSTs = {}
     
     for pair,val in zip( combinations(['bebG','cheG','esnG','gbrG','pelG'],2), combinations([bebG,cheG,esnG,gbrG,pelG],2)):
         ac1 = allel.GenotypeArray(val[0]).count_alleles()
         ac2 = allel.GenotypeArray(val[1]).count_alleles()
-        fst = allel.moving_hudson_fst(ac1, ac2, 10)
+        num, den = allel.hudson_fst(ac1, ac2)
+        fst = np.sum(num)/np.sum(den)
+        FSTs.update({pair : fst})
     
-        FSTs.update({str(pair).strip("(''),") : fst})
+    return FSTs
 
 
 
+# note: Generates a scatter graph if given a dictionary of values
+def FSTscatter(input, start, stop, step):
+    # note: Creates the range caterogies
+    bounds = [
+             (strink(n)+'-'+strink(min(n+step, stop)))
+             for n in range(start, stop, step)
+             ]
+    nstep = int((stop - start)/step)
+    keydict = dict(zip(list(range(1, nstep+1, 1)), bounds))
+    # note: Makes a nested dictionary
+    nest = replace_keys(input, keydict)
 
+    # note: Creates df for graph
+    df = pd.DataFrame.from_dict(nest, orient='index').stack().reset_index()
+    df['Pop'] = df[['level_0', 'level_1']].agg('-'.join, axis=1)
+    del df['level_0']
+    del df['level_1']
+    df.columns = ['Range', 'FST', 'Pop']
 
+    # note: plots the scatter graph
+    fig = px.scatter(df, x="Pop", y="FST", color="Range",
+                     color_discrete_sequence=px.colors.qualitative.Dark24,
+                     labels={"Range": "FST Region on Chromosome (bp) ",
+                             "Pop": "Population Group",
+                             "FST": "FST Value"},
+                     title="Hudson FST",
+                     animation_frame="Range",
+                     animation_group="Pop")
+    fig.update_traces(marker=dict(size=12))
 
-
-    # note: Compute variant density in each window
-    h, _ = np.histogram(pos, bins=bin)
-    y = h / windowsize
-
-    # note: plots & configures the graph
-    fig = go.Figure(go.Line(x=x, y=y,
-                            hovertemplate=
-                            'Variant density (bp<sup>-1</sup>): %{y}' +
-                            '<br>Chromosome position (bp)<extra></extra>: %{x}'))
-    fig.update_traces(line_color='goldenrod')
-
-    # note: Centers the title and fonts
-    fig.update_layout(title={'text': "Raw Varient Density",
-                             'x':0.5,
-                             'xanchor': 'center',
-                             'yanchor': 'top'},
-                      xaxis_title="Chromosome position (bp)",
-                      yaxis_title="Variant density (bp<sup>-1</sup>)",
-                      font_family="Times New Roman",
+    # note: Sets the fonts and layout
+    fig.update_layout(font_family="Times New Roman",
                       font_color="Black",
                       title_font_family="Times New Roman",
-                      title_font_color="Black")
+                      title_font_color="Black",
+                      legend={'traceorder': 'reversed'},
+                      showlegend=True,
+                      yaxis_range=[-0.1, 0.8])
 
-    # note: Adds cross section cursor
-    fig.update_xaxes(showspikes=True, spikecolor="Grey", spikesnap="cursor",
-                     spikemode="across")
-    fig.update_yaxes(showspikes=True, spikecolor="Black", spikethickness=2)
-    fig.update_layout(spikedistance=1000, hoverdistance=100)
-
-    # note: Adds sliding window to the graph
-    fig.update_layout(
-        xaxis=dict(
-            rangeselector=dict(
-                buttons=list([
-                    dict(count=200000,
-                         label="200000bp",
-                         step="all",
-                         stepmode="backward"),
-                    dict(count=400000,
-                         label="400000bp",
-                         step="all",
-                         stepmode="backward"),
-                    dict(count=600000,
-                         label="600000bp",
-                         step="all",
-                         stepmode="backward"),
-                    dict(count=800000,
-                         label="800000bp",
-                         step="all",
-                         stepmode="backward"),
-                    dict(step="all")
-                ])
-            ),
-            rangeslider=dict(
-                visible=True
-            ),
-            type="linear"
-        )
-    )
+    fig.add_hline(y=0.12, line_width=2, line_dash="dash", line_color="gray")
 
     graph=pio.to_html(fig)
 
     return graph
 
+
+
+    
+
+def fst_dict_calc(positions, array, dividend=1000): 
+    
+    indices = {}
+
+    for i, num in enumerate(sorted(positions)):
+        
+        # take upper integer value of num
+        n = math.ceil(num/dividend)
+        
+        # add the indices to the corresponding key as n
+        indices.setdefault(n, []).append(i)
+    
+    # sort the dictionariy
+    indices = dict(sorted(indices.items(), key=lambda x:x[0]))
+    
+    fst_dict1 = {}
+    fst_dict2 = {}
+    index_positions = {}
+
+    for i, val in indices.items():
+
+        ns=[]
+        for item in array:
+            ns+=[item[val[0]:val[-1]]]
+        
+
+        results = calc_hudson_fst(ns)
+        #print(results)
+        
+        
+        # update index_positions dictionary as {i : range} pair
+        index_positions.update({i : str(val[0])+':'+str(val[-1])})
+        
+        
+        # update fst_dict2 dictionary as {i : results} pair
+        fst_dict2.update({i : results})
+
+        
+        for k, v in results.items():
+            
+            # nested dictionary as {pops : {index : fst_value}}
+            fst_dict1.setdefault(k, {}).update({i : v})
+
+    return fst_dict1
 

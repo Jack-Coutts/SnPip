@@ -33,19 +33,19 @@
       <a href="/snp_info" target="_blank">Open Individual SNP Information </a>
     </div>
     <div class="bt btn-link btn-sm col-sm-2">
-      <a href="/BEB_info" target="_blank">Open BEB SNP Infomormation </a>
+      <a href="/BEB_info" target="_blank">{{bclick}} </a>
     </div>
     <div class="bt btn-link btn-sm col-sm-2">
-      <a href="/GBR_info" target="_blank">Open GBR SNP Infomormation </a>
+      <a href="/GBR_info" target="_blank">{{gclick}} </a>
     </div>
     <div class="bt btn-link btn-sm col-sm-2">
-      <a href="/CHB_info" target="_blank">Open CHB SNP Infomormation </a>
+      <a href="/CHB_info" target="_blank">{{cclick}} </a>
     </div>
     <div class="bt btn-link btn-sm col-sm-2">
-      <a href="/PEL_info" target="_blank">Open PEL SNP Infomormation </a>
+      <a href="/PEL_info" target="_blank">{{pclick}} </a>
     </div>
     <div class="bt btn-link btn-sm col-sm-2">
-      <a href="/ESN_info" target="_blank">Open ESN SNP Infomormation </a>
+      <a href="/ESN_info" target="_blank">{{eclick}} </a>
     </div>
   </div>
 </div>
@@ -59,19 +59,33 @@
 
 </div>
 
+<!-- Download buttons -->
+<center>
+  <div class="btn-group" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="container">
+      <button id="export" type="button" class="btn btn-danger btn-sm">Download FST!</button>
+      <button id="export2"  type="button" class="btn btn-danger btn-sm">Download Tajima's D!</button>
+      <button id="export1" type="button" class="btn btn-danger btn-sm">Download Shannon's Diversity Index!</button>
+    </div>
+  </div>
+  </center>
+
 
 <!-- Three stats tables in a row, one of which is Hudson FST -->
 
 <div class="container-fluid">
   <div class="row">
-    <div class="clusterize clusterize-scroll col-sm-2">
+    <div class="col-sm-2">
       {{fst|safe}}
     </div>
-    <div class="clusterize clusterize-scroll col-sm-10">
-      
+    <div class="col-sm-10">
+      {{graph|safe}}
+
     </div>
   </div>
 </div>
+
+
 
 <br>
 <br>
