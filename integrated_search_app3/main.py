@@ -42,6 +42,10 @@ def about(): # this function will run whenever we go to this route
 def documentation(): # this function will run whenever we go to this route
     return render_template('documentation.html')
 
+@app.route('/doc_download')
+def doc_download():
+    return send_file('static/Documentation.pdf', as_attachment=True, cache_timeout=0)
+
 @app.route('/No_Gene') # this is the documentation page
 def No_Gene(): # this function will run whenever we go to this route
     return render_template('No_Gene.html')
