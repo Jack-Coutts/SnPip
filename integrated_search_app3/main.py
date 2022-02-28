@@ -575,7 +575,6 @@ def search_out(): # this function will run whenever we go to this route
                 graph=FSTscatter(gd, int(positions[0]), int(positions[-1]), int(1000))
                 #graph=enumerate(sorted(positions))
                 
-                shiloh=[positions[0], positions[-1]]
 
                 # Calculate shannon diversity
                 Shann=Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop)
@@ -603,8 +602,7 @@ def search_out(): # this function will run whenever we go to this route
                                         eclick=eclick,
                                         graph=graph,
                                         array=array,
-                                        gd=gd,
-                                        shiloh=shiloh
+                                        gd=gd
                                         )
 
 

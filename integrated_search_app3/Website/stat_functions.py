@@ -17,6 +17,7 @@ from json import JSONEncoder
 import plotly.io as pio
 import plotly.graph_objects as go
 
+import csv
 
 
 # Initial Graphs 
@@ -420,6 +421,8 @@ def Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop):
 
     Shannon = pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations']).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id1', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
 
+    #pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations']).to_csv('Shannon.csv') 
+
     return Shannon
 
 # Tajimas D
@@ -566,7 +569,7 @@ def FSTscatter(input, start, stop, step):
                       title_font_color="Black",
                       legend={'traceorder': 'reversed'},
                       showlegend=True,
-                      yaxis_range=[-0.1, 0.8])
+                      yaxis_range=[-0.1, 0.7])
 
     fig.add_hline(y=0.12, line_width=2, line_dash="dash", line_color="gray")
 
