@@ -1,0 +1,135 @@
+<!-- Jinija syntax - extending the base template by adding content in the block content section-->
+{%extends "base.html" %}
+{% block title %} Search Results {% endblock %}
+{% block content %}
+
+{{search_type}}
+{{search_entry}}
+{{subpops}}
+
+<div class='mt-sm-3'style="margin:auto;max-width:1000px">
+  <center><h2>Search Results</h2></center>
+</div>
+
+<br>
+
+
+
+<!-- Text stating search time and SNP number -->
+<center>
+<div class="alert alert-success">
+  <strong>{{num_snps}}</strong> 
+  <strong>{{runtime}}</strong>
+  <br>
+  <strong>  {{Searched_pops}} </strong>
+</div>
+</center>
+
+<br>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="bt btn-link btn-sm col-sm-2">
+      <a href="/snp_info" target="_blank">Open Individual SNP Information </a>
+    </div>
+    <div class="bt btn-link btn-sm col-sm-2">
+      <a href="/BEB_info" target="_blank">{{bclick}} </a>
+    </div>
+    <div class="bt btn-link btn-sm col-sm-2">
+      <a href="/GBR_info" target="_blank">{{gclick}} </a>
+    </div>
+    <div class="bt btn-link btn-sm col-sm-2">
+      <a href="/CHB_info" target="_blank">{{cclick}} </a>
+    </div>
+    <div class="bt btn-link btn-sm col-sm-2">
+      <a href="/PEL_info" target="_blank">{{pclick}} </a>
+    </div>
+    <div class="bt btn-link btn-sm col-sm-2">
+      <a href="/ESN_info" target="_blank">{{eclick}} </a>
+    </div>
+  </div>
+</div>
+
+<br>
+
+<!-- Gene map post searching -->
+<div>
+
+  {{gene_map|safe}}
+
+</div>
+
+<!-- Download buttons -->
+<center>
+  <div class="btn-group" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="container">
+      <button id="export" type="button" class="btn btn-link btn-sm">Download FST!</button>
+      <button id="export2"  type="button" class="btn btn-link btn-sm">Download Tajima's D!</button>
+      <button id="export1" type="button" class="btn btn-link btn-sm">Download Shannon's Diversity Index!</button>
+    </div>
+  </div>
+  </center>
+
+
+<!-- Three stats tables in a row, one of which is Hudson FST -->
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="clusterize clusterize-scroll col-sm-2">
+      {{fst|safe}}
+    </div>
+    <div class="ccol-sm-10">
+
+      {{graph|safe}}
+      
+    </div>
+  </div>
+</div>
+
+
+<br>
+<br>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="clusterize clusterize-scroll col-sm-2">
+      {{Taj|safe}}
+    </div>
+    <div class="clusterize clusterize-scroll col-sm-10">
+      
+    </div>
+  </div>
+</div>
+
+<br>
+<br>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="clusterize clusterize-scroll col-sm-2">
+      {{Shann|safe}}
+    </div>
+    <div class="clusterize clusterize-scroll col-sm-10">
+
+    </div>
+  </div>
+</div>
+
+<br>
+<br>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="clusterize clusterize-scroll col-sm-2">
+      {{fst|safe}}
+    </div>
+    <div class="clusterize clusterize-scroll col-sm-10">
+      {{Taj|safe}}
+    </div>
+  </div>
+</div>
+
+<br>
+<br>
+
+{% endblock %}
