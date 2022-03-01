@@ -483,29 +483,13 @@ def Tajimas(genotype_array, subpop):
 # note: Converts 200000 to 2M for better legend formating
 def strink(num):
     if len(str(num)) <= 5:
-        snum = str("{:.2f}".format(num/1000)+'k')
+        snum = str((num/1000))+'k'
         return snum
     elif len(str(num)) >= 6:
-        snum = str("{:.2f}".format(num/1000000)+'M')
+        snum = str((num/1000000))+'M'
         return snum
     else:
         pass
-
-
-
-# note: Replaces the step keys in the input dict with their boundaries
-def replace_keys(old_dict, key_dict):
-    new_dict = {}
-    for key in old_dict.keys():
-        new_key = key_dict.get(key, key)
-        if isinstance(old_dict[key], dict):
-            new_dict[new_key] = replace_keys(old_dict[key], key_dict)
-        else:
-            new_dict[new_key] = old_dict[key]
-    return new_dict
-
-
-
 
 
 
@@ -539,17 +523,35 @@ def FSTscatter(input, start, stop, step):
              (strink(n)+'-'+strink(min(n+step, stop)))
              for n in range(start, stop, step)
              ]
-    nstep = int((stop - start)/step)
-    keydict = dict(zip(list(range(1, nstep+1, 1)), bounds))
-    # note: Makes a nested dictionary
-    nest = replace_keys(input, keydict)
+    nstep = math.ceil((stop - start)/step)
+
+    
+    # note: Creates a list of nested keys from input dict
+    ik = []
+    for v in input.values():
+        for key in v.keys():
+            ik.append(key)
+
+    # note: Maps each nested key from the input dict to a boundary
+    first = ik[0:nstep]
+    keydict = dict(zip(first, bounds))
 
     # note: Creates df for graph
-    df = pd.DataFrame.from_dict(nest, orient='index').stack().reset_index()
+    df = pd.DataFrame.from_dict(input, orient='index').stack().reset_index()
     df['Pop'] = df[['level_0', 'level_1']].agg('-'.join, axis=1)
     del df['level_0']
     del df['level_1']
+    df = df.fillna('')
     df.columns = ['Range', 'FST', 'Pop']
+
+    df['Range'].replace(keydict, inplace=True)
+ 
+
+    # note: Sorts the FST values in the df to auto set max axis values
+    FST = list(df['FST'])
+    FST = [i for i in FST if i != '']
+    FST.sort(key=float)
+    #print(FST)
 
     # note: plots the scatter graph
     fig = px.scatter(df, x="Pop", y="FST", color="Range",
@@ -568,14 +570,17 @@ def FSTscatter(input, start, stop, step):
                       title_font_family="Times New Roman",
                       title_font_color="Black",
                       legend={'traceorder': 'reversed'},
-                      showlegend=True,
-                      yaxis_range=[-0.1, 0.7])
+                      showlegend=False,
+                      yaxis_range=[FST[0] - 0.01, FST[-1] + 0.01])
+    fig.add_hline(y=0.12, line_width=1, line_dash="dash", line_color="gray")
+    fig.add_hline(y=0.25, line_width=1, line_dash="dash", line_color="red")
 
-    fig.add_hline(y=0.12, line_width=2, line_dash="dash", line_color="gray")
+
 
     graph=pio.to_html(fig)
 
-    return graph
+
+    return  graph
 
 
 

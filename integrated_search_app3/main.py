@@ -1,4 +1,6 @@
 # import the app factory (the app)
+from audioop import reverse
+from operator import itemgetter
 from os import sep
 
 from Website import create_app
@@ -569,15 +571,22 @@ def search_out(): # this function will run whenever we go to this route
                     else:
                         pass
                 
-
+                # Creating an FST graph
                 mycursor.execute("SELECT POS FROM snp WHERE GENE = %s",[gene])
                 positions=mycursor.fetchall()
                 positions=[float(a) for item in positions for a in item]
 
-                gd=fst_dict_calc(positions, array )
+                sorting=positions
+                sorting.sort(reverse=False, key=float)
 
-                graph=FSTscatter(gd, int(positions[0]), int(positions[-1]), int(1000))
-                #graph=enumerate(sorted(positions))
+                dist=(sorting[-1]-sorting[0])
+                dist=int(0.1*dist)
+                
+                # Create a dictionary that can be used as input for the graph function
+                gd=fst_dict_calc(positions, array, dist )
+
+                graph=FSTscatter(gd, int(positions[0]), int(positions[-1]), dist)
+
                 
 
                 # Calculate shannon diversity
@@ -605,7 +614,7 @@ def search_out(): # this function will run whenever we go to this route
                                         pclick=pclick,
                                         eclick=eclick,
                                         graph=graph,
-                                        array=array,
+                                        dist=dist,
                                         gd=gd
                                         )
 
@@ -670,11 +679,25 @@ def search_out(): # this function will run whenever we go to this route
                 mycursor.execute("SELECT GT FROM snp WHERE ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
                 geno_list = mycursor.fetchall()
 
+                # Creating an FST graph
+                mycursor.execute("SELECT POS FROM snp WHERE ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                positions=mycursor.fetchall()
+                positions=[float(a) for item in positions for a in item]
+
+                sorted=positions.sort(reverse=True)
+                dist=math.ceil((sorted[0]-sorted[-1])/15)
+
                 # Make genotype array
                 array=makeArray(geno_list)
 
                 # Run all fst comparisons
                 fst = all_hudson_fsts(array, subpop)
+
+                # Create a dictionary that can be used as input for the graph function
+                gd=fst_dict_calc(positions, array )
+
+                #Plot the graph
+                graph=FSTscatter(gd, int(positions[0]), int(positions[-1]), int(dist))
 
                 ### Shannon Diversity ###
 
@@ -734,7 +757,8 @@ def search_out(): # this function will run whenever we go to this route
                                         gclick=gclick,
                                         cclick=cclick,
                                         pclick=pclick,
-                                        eclick=eclick)
+                                        eclick=eclick,
+                                        graph=graph)
 
             else:
 
