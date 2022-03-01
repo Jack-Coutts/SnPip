@@ -592,9 +592,23 @@ def search_out(): # this function will run whenever we go to this route
                 # Calculate shannon diversity
                 Shann=Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop)
 
+                ShannG=ShannonG(allsnps, BAF, GAF, CAF, PAF, EAF, subpop, positions)
+
+                ShannGG=ShannonGraph(ShannG)
+
+
+
                 # Tajimas D
 
                 Taj=Tajimas(array, subpop)
+
+                td=moving_tajimas_d(array)
+
+                #td=taj_dict_calc(positions, array, dist)
+
+                tdg=TD_Bar(td)
+
+                
                 
                 # Return runtime of search/data extraction
                 runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
@@ -615,7 +629,9 @@ def search_out(): # this function will run whenever we go to this route
                                         eclick=eclick,
                                         graph=graph,
                                         dist=dist,
-                                        gd=gd
+                                        gd=gd,
+                                        tdg=tdg,
+                                        ShannGG=ShannGG
                                         )
 
 

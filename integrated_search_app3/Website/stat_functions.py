@@ -20,6 +20,7 @@ import plotly.graph_objects as go
 import csv
 
 
+
 # Initial Graphs 
 # Gene Map
 def gene_list_graph(position, database, increment_size):
@@ -631,3 +632,259 @@ def fst_dict_calc(positions, array, dividend=1000):
 
     return fst_dict1
 
+
+def moving_tajimas_d(array):
+    # passing sequences into makeArray function
+   
+    # extract genotype array into samples
+    bebG, cheG, esnG, gbrG, pelG = array
+    
+    moving_Tajima_D = {}
+    
+    for pair,val in zip( combinations(['bebG','cheG','esnG','gbrG','pelG'],1), combinations([bebG,cheG,esnG,gbrG,pelG],1)):
+        
+        ac1 = allel.GenotypeArray(val[0]).count_alleles()
+        
+        fst = allel.moving_tajima_d(ac1, 50, step = 1)
+    
+        moving_Tajima_D.update({pair : fst})
+    
+    return moving_Tajima_D
+
+# note: Plots a Barchart for Tajima's D
+def TD_Bar(taj):
+
+    for v in taj.values():
+        nstep = len(v)
+
+    steplabels = list(range(1, nstep + 1, 1))
+
+    # note: Creates a nested dictionary for the input
+    nest = {}
+    for k, v in taj.items():
+        nest[k] = dict(zip(steplabels, v))
+
+    # note: Creates a df for the graph
+    df = pd.DataFrame.from_dict(nest, orient='index').stack().reset_index()
+    df.columns = ['Pop', 'Step', 'TD']
+
+    # note: Plots the graph
+    fig = px.bar(df, x='Step', y='TD', color='Pop', barmode='overlay',
+                 color_discrete_sequence=px.colors.qualitative.G10)
+
+    # note: Sets the fonts and layout
+    fig.update_layout(font_family="Times New Roman",
+                      font_color="Black",
+                      title_font_family="Times New Roman",
+                      title_font_color="Black")
+
+    # note: Creates a range slider
+    fig.update_layout(
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=200000,
+                         label="200000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=400000,
+                         label="400000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=600000,
+                         label="600000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=800000,
+                         label="800000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(step="all")
+                ])
+            ),
+            rangeslider=dict(
+                visible=True
+            ),
+            type="linear"
+        )
+    )
+
+    graph=pio.to_html(fig)
+
+    return graph
+
+
+def taj_dict_calc(positions, array, dividend=1000): 
+    
+    indices = {}
+
+    for i, num in enumerate(sorted(positions)):
+        
+        # take upper integer value of num
+        n = math.ceil(num/dividend)
+        
+        # add the indices to the corresponding key as n
+        indices.setdefault(n, []).append(i)
+    
+    # sort the dictionariy
+    indices = dict(sorted(indices.items(), key=lambda x:x[0]))
+    
+    fst_dict1 = {}
+    fst_dict2 = {}
+    index_positions = {}
+
+    for i, val in indices.items():
+
+        ns=[]
+        for item in array:
+            ns+=[item[val[0]:val[-1]]]
+        
+
+        results = moving_tajimas_d(ns)
+        #print(results)
+        
+        
+        # update index_positions dictionary as {i : range} pair
+        index_positions.update({i : str(val[0])+':'+str(val[-1])})
+        
+        
+        # update fst_dict2 dictionary as {i : results} pair
+        fst_dict2.update({i : results})
+
+        
+        for k, v in results.items():
+            
+            # nested dictionary as {pops : {index : fst_value}}
+            fst_dict1.setdefault(k, {}).update({i : v})
+
+    return fst_dict1
+
+
+
+
+def ShannonG(allsnps, BAF, GAF, CAF, PAF, EAF, subpop, positions):
+
+    # Turn extracted list of tuples of strings into a list of floats
+    BAF=[float(a) for item in BAF for a in item]
+    GAF=[float(a) for item in GAF for a in item]
+    CAF=[float(a) for item in CAF for a in item]
+    PAF=[float(a) for item in PAF for a in item]
+    EAF=[float(a) for item in EAF for a in item]
+
+
+    #list to be zipped together
+    poplst=[]
+    for item in subpop:
+        if item == 'BEB':
+            poplst.append(BAF)
+
+        elif item == 'GBR':
+            poplst.append(GAF)
+        
+        elif item == 'CHB':
+            poplst.append(CAF)
+
+        elif item == 'PEL':
+            poplst.append(PAF)
+        
+        elif item == 'ESN':
+            poplst.append(EAF)
+        else:
+            pass
+
+    # Combine lists together into a nested list so that each sublist contains the AF for each subpop
+    afs=[list(l) for l in zip(*poplst)]
+
+    allsnp=allsnps # List of tuples the SNPs
+    # Convert list of tuples of strings to list of strings
+    allsnps=[a for item in allsnp for a in item]
+
+    snlst=[]
+    for item in allsnps:
+
+        snlst.append(item)
+
+    shnnlst=[]
+
+    for item in afs:
+
+        shnn=sdi(item)
+        shnnlst.append(shnn)
+
+    
+    zip_iterator = zip(snlst, shnnlst)
+    dictionary=dict(zip_iterator)
+
+    #Shannon = pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations']).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id1', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+
+    #pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations']).to_csv('Shannon.csv') 
+
+    Shannon = pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations'])
+
+    Shannon["POS"]=positions
+
+    return Shannon
+
+def ShannonGraph(df):
+
+    df.columns = ['SNP', 'Shannon', 'POS']
+
+    # NOTE: Plots the graph
+    fig = px.line(df, y='Shannon', x='POS',
+                  hover_data=["POS", "Shannon", "SNP"],
+                  labels={"POS": "Chromosome Position (bp)",
+                          "Shannon": "Shannon Diversity",
+                          "SNP": "SNP"})
+    fig.update_traces(line_color='goldenrod')
+
+    # NOTE: Centers the title and fonts
+    fig.update_layout(title={'text': "Shannon Diversity",
+                             'x':0.5,
+                             'xanchor': 'center',
+                             'yanchor': 'top'},
+                      xaxis_title="Chromosome position (bp)",
+                      yaxis_title="Shannon Diversity",
+                      font_family="Times New Roman",
+                      font_color="Black",
+                      title_font_family="Times New Roman",
+                      title_font_color="Black")
+
+    # NOTE: Adds cross section cursor
+    fig.update_xaxes(showspikes=True, spikecolor="Grey", spikesnap="cursor",
+                     spikemode="across")
+    fig.update_yaxes(showspikes=True, spikecolor="Black", spikethickness=2)
+    fig.update_layout(spikedistance=1000, hoverdistance=100)
+
+    # NOTE: Adds sliding window
+    fig.update_layout(
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=200000,
+                         label="200000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=400000,
+                         label="400000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=600000,
+                         label="600000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=800000,
+                         label="800000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(step="all")
+                ])
+            ),
+            rangeslider=dict(
+                visible=True
+            ),
+            type="linear"
+        )
+    )
+    graph=pio.to_html(fig)
+
+    return graph
