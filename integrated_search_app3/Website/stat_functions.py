@@ -501,15 +501,42 @@ def strink(num):
 
 from itertools import combinations
 
-def calc_hudson_fst(array):
+def calc_hudson_fst(array, subpop):
     # passing sequences into makeArray function
     g = array
     # extract genotype array into samples
     bebG, cheG, esnG, gbrG, pelG = g
+
+    l1=[]
+    l2=[]
+
+    for item in subpop:
+
+        if item == 'BEB':
+            l1.append('BEB')
+            l2.append(bebG)
+
+        elif item == 'GBR':
+            l1.append('GBR')
+            l2.append(gbrG)
+        
+        elif item == 'CHB':
+            l1.append('CHB')
+            l2.append(cheG)
+
+        elif item == 'PEL':
+            l1.append('PEL')
+            l2.append(pelG)
+        
+        elif item == 'ESN':
+            l1.append('ESN')
+            l2.append(esnG)
+        else:
+            pass
     
     FSTs = {}
     
-    for pair,val in zip( combinations(['bebG','cheG','esnG','gbrG','pelG'],2), combinations([bebG,cheG,esnG,gbrG,pelG],2)):
+    for pair,val in zip( combinations(l1,2), combinations(l2,2)):
         ac1 = allel.GenotypeArray(val[0]).count_alleles()
         ac2 = allel.GenotypeArray(val[1]).count_alleles()
         num, den = allel.hudson_fst(ac1, ac2)
@@ -532,19 +559,16 @@ def FSTscatter(input, start, stop):
     vlen = []
     for v in input.values():
         vlen.append(len(v.values()))
-    print(vlen)
 
 
     # note: Calculates the step size of the input data
     step = int((stop - start)/vlen[0])
-    print(step)
 
     # note: Creates the range caterogies
     bounds = [
              (strink(n)+'-'+strink(min(n+step, stop)))
              for n in range(start, stop, step)
              ]
-    print(len(bounds))
 
     # note: Maps each nested key from the input dict to a boundary
     first = ik[0:vlen[0]]
@@ -601,7 +625,7 @@ def FSTscatter(input, start, stop):
 
     
 
-def fst_dict_calc(positions, array, dividend=1000): 
+def fst_dict_calc(positions, array, subpop, dividend=1000): 
     
     indices = {}
 
@@ -627,7 +651,7 @@ def fst_dict_calc(positions, array, dividend=1000):
             ns+=[item[val[0]:val[-1]]]
         
 
-        results = calc_hudson_fst(ns)
+        results = calc_hudson_fst(ns, subpop)
         #print(results)
         
         
@@ -647,23 +671,127 @@ def fst_dict_calc(positions, array, dividend=1000):
     return fst_dict1
 
 
-def moving_tajimas_d(array):
+def moving_tajimas_d(array, subpop):
     # passing sequences into makeArray function
    
     # extract genotype array into samples
     bebG, cheG, esnG, gbrG, pelG = array
+
+    l1=[]
+    l2=[]
+
+    for item in subpop:
+
+        if item == 'BEB':
+            l1.append('BEB')
+            l2.append(bebG)
+
+        elif item == 'GBR':
+            l1.append('GBR')
+            l2.append(gbrG)
+        
+        elif item == 'CHB':
+            l1.append('CHB')
+            l2.append(cheG)
+
+        elif item == 'PEL':
+            l1.append('PEL')
+            l2.append(pelG)
+        
+        elif item == 'ESN':
+            l1.append('ESN')
+            l2.append(esnG)
+        else:
+            pass
     
     moving_Tajima_D = {}
     
-    for pair,val in zip( combinations(['bebG','cheG','esnG','gbrG','pelG'],1), combinations([bebG,cheG,esnG,gbrG,pelG],1)):
+    for pair,val in zip( combinations(l1,1), combinations(l2,1)):
         
         ac1 = allel.GenotypeArray(val[0]).count_alleles()
         
         fst = allel.moving_tajima_d(ac1, 50, step = 1)
+
+        fst=list(fst)
     
         moving_Tajima_D.update({pair : fst})
     
     return moving_Tajima_D
+
+def TD_Bar2(taj, positions):
+
+    for v in taj.values():
+        nstep = len(v)
+
+    count=0
+    d={}
+    for item in positions:
+
+        d[count]=item
+        count+=1
+
+    z=[]
+    for i, j in enumerate(range(nstep)):
+
+        z.append(d[i])
+
+
+
+    steplabels = z #list(range(1, nstep + 1, 1))
+
+    # note: Creates a nested dictionary for the input
+    nest = {}
+    for k, v in taj.items():
+        nest[k] = dict(zip(steplabels, v))
+
+    # note: Creates a df for the graph
+    df = pd.DataFrame.from_dict(nest, orient='index').stack().reset_index()
+    df.columns = ['Pop', 'Step', 'TD']
+
+    # note: Plots the graph
+    fig = px.bar(df, x='Step', y='TD', color='Pop', barmode='overlay',
+                 color_discrete_sequence=px.colors.qualitative.G10)
+
+    # note: Sets the fonts and layout
+    fig.update_layout(font_family="Times New Roman",
+                      font_color="Black",
+                      title_font_family="Times New Roman",
+                      title_font_color="Black")
+
+    # note: Creates a range slider
+    fig.update_layout(
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=200000,
+                         label="200000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=400000,
+                         label="400000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=600000,
+                         label="600000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(count=800000,
+                         label="800000bp",
+                         step="all",
+                         stepmode="backward"),
+                    dict(step="all")
+                ])
+            ),
+            rangeslider=dict(
+                visible=True
+            ),
+            type="linear"
+        )
+    )
+
+    graph=pio.to_html(fig)
+
+    return graph
 
 
 def Tajimas2(genotype_array, subpop):
@@ -742,6 +870,51 @@ def taj_dict_calc(positions, array, subpop, dividend=1000):
         
 
         results = Tajimas2(ns, subpop)
+        #print(results)
+        
+        
+        # update index_positions dictionary as {i : range} pair
+        index_positions.update({i : str(val[0])+':'+str(val[-1])})
+        
+        
+        # update fst_dict2 dictionary as {i : results} pair
+        fst_dict2.update({i : results})
+
+        
+        for k, v in results.items():
+            
+            # nested dictionary as {pops : {index : fst_value}}
+            fst_dict1.setdefault(k, {}).update({i : v})
+
+    return fst_dict1
+
+def mtaj_dict_calc(positions, array, subpop, dividend=1000): 
+    
+    indices = {}
+
+    for i, num in enumerate(sorted(positions)):
+        
+        # take upper integer value of num
+        n = math.ceil(num/dividend)
+        
+        # add the indices to the corresponding key as n
+        indices.setdefault(n, []).append(i)
+    
+    # sort the dictionariy
+    indices = dict(sorted(indices.items(), key=lambda x:x[0]))
+    
+    fst_dict1 = {}
+    fst_dict2 = {}
+    index_positions = {}
+
+    for i, val in indices.items():
+
+        ns=[]
+        for item in array:
+            ns+=[item[val[0]:val[-1]]]
+        
+
+        results = moving_tajimas_d(ns, subpop)
         #print(results)
         
         
@@ -926,7 +1099,7 @@ def haplotype_diversity(array):
 
 
 
-def haplotype_diversity2T(positions, array, snpnum): 
+def haplotype_diversity2T(positions, array, subpop, snpnum): 
     
     indices = {}
 
@@ -1027,18 +1200,32 @@ def haplotype_diversity2T(positions, array, snpnum):
     gbrG_V=list(inner5.values())
 
 
+    fst4={}
+    for item in subpop:
 
-    fst3={'bebG':dict(zip(bebG_k, bebG_V)),
-          'cheG':dict(zip(cheG_k, cheG_V)),
-          'esnG':dict(zip(esnG_k, esnG_V)),
-          'pelG':dict(zip(pelG_k, pelG_V)),
-          'gbrG':dict(zip(gbrG_k, gbrG_V))}
+        if item == 'BEB':
+            fst4['BEB']=dict(zip(bebG_k, bebG_V))
+
+        elif item == 'CHB':
+            fst4['CHB']=dict(zip(cheG_k, cheG_V))
+        
+        elif item == 'ESN':
+            fst4['ESN']=dict(zip(esnG_k, esnG_V))
+        
+        elif item == 'PEL':
+            fst4['PEL']=dict(zip(pelG_k, pelG_V))
+        
+        elif item == 'GBR':
+            fst4['GBR']=dict(zip(gbrG_k, gbrG_V))
+        
+        else:
+            pass
 
     
     user_ids = []
     frames = []
 
-    for user_id, d in fst3.items():
+    for user_id, d in fst4.items():
         user_ids.append(user_id)
         frames.append(pd.DataFrame.from_dict(d, orient='index'))
 
@@ -1057,7 +1244,7 @@ def haplotype_diversity2T(positions, array, snpnum):
 
 
 
-def haplotype_diversity2G(positions, array, snpnum=100): 
+def haplotype_diversity2G(positions, array, subpop, snpnum=100): 
     
     indices = {}
 
@@ -1160,14 +1347,29 @@ def haplotype_diversity2G(positions, array, snpnum=100):
 
 
 
-    fst3={'bebG':dict(zip(bebG_k, bebG_V)),
-          'cheG':dict(zip(cheG_k, cheG_V)),
-          'esnG':dict(zip(esnG_k, esnG_V)),
-          'pelG':dict(zip(pelG_k, pelG_V)),
-          'gbrG':dict(zip(gbrG_k, gbrG_V))}
+    fst4={}
+    for item in subpop:
+
+        if item == 'BEB':
+            fst4['BEB']=dict(zip(bebG_k, bebG_V))
+
+        elif item == 'CHB':
+            fst4['CHB']=dict(zip(cheG_k, cheG_V))
+        
+        elif item == 'ESN':
+            fst4['ESN']=dict(zip(esnG_k, esnG_V))
+        
+        elif item == 'PEL':
+            fst4['PEL']=dict(zip(pelG_k, pelG_V))
+        
+        elif item == 'GBR':
+            fst4['GBR']=dict(zip(gbrG_k, gbrG_V))
+        
+        else:
+            pass
 
 
-    return fst3
+    return fst4
 
 
 

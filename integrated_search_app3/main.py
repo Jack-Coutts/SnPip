@@ -597,7 +597,7 @@ def search_out(): # this function will run whenever we go to this route
                 dist=int(0.1*dist)
                 
                 # Create a dictionary that can be used as input for the graph function
-                gd=fst_dict_calc(positions, array, dist )
+                gd=fst_dict_calc(positions, array, subpop, dist )
 
                 graph=FSTscatter(gd, int(positions[0]), int(positions[-1]))
 
@@ -612,9 +612,9 @@ def search_out(): # this function will run whenever we go to this route
 
                 #haplotype diversity
 
-                hp=haplotype_diversity2T(positions, array, snpnum=100)
+                hp=haplotype_diversity2T(positions, array, subpop, snpnum=100)
 
-                hap=haplotype_diversity2G(positions, array, snpnum=50)
+                hap=haplotype_diversity2G(positions, array, subpop, snpnum=50)
 
                 hpg=hp_Bar(hap, int(positions[0]), int(positions[-1]))
 
@@ -622,15 +622,17 @@ def search_out(): # this function will run whenever we go to this route
 
                 # Tajimas D
 
-                #Taj=Tajimas(array, subpop)
+                Taj=Tajimas(array, subpop)
 
-                #td=moving_tajimas_d(array)
+                #td=moving_tajimas_d(array, subpop)
 
-                td=taj_dict_calc(positions, array, subpop, dist)
+                td=taj_dict_calc(positions, array, subpop, dist/2)
 
                 #td=taj_dict_calc(positions, array, dist)
 
                 tdg=TD_Bar(td, int(positions[0]), int(positions[-1]))
+
+                #tdg=TD_Bar2(td, positions)
 
                 
                 
@@ -656,7 +658,8 @@ def search_out(): # this function will run whenever we go to this route
                                         tdg=tdg,
                                         ShannGG=ShannGG,
                                         hpg=hpg,
-                                        hp=hp
+                                        hp=hp,
+                                        Taj=Taj
                                         )
 
 
