@@ -11,10 +11,10 @@ stop = 41589900
 # NOTE: Converts 200000 to 2M for better legend formating
 def strink(num):
     if len(str(num)) <= 5:
-        snum = str("{:.6f}".format(num/1000)+'k')
+        snum = str((num/1000))+'k'
         return snum
     elif len(str(num)) >= 6:
-        snum = str("{:.6f}".format(num/1000000)+'M')
+        snum = str((num/1000000))+'M'
         return snum
     else:
         pass
