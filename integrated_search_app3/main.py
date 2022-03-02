@@ -585,7 +585,7 @@ def search_out(): # this function will run whenever we go to this route
                 # Create a dictionary that can be used as input for the graph function
                 gd=fst_dict_calc(positions, array, dist )
 
-                graph=FSTscatter(gd, int(positions[0]), int(positions[-1]), dist)
+                graph=FSTscatter(gd, int(positions[0]), int(positions[-1]))
 
                 
 
@@ -596,17 +596,27 @@ def search_out(): # this function will run whenever we go to this route
 
                 ShannGG=ShannonGraph(ShannG)
 
+                #haplotype diversity
+
+                hp=haplotype_diversity2T(positions, array, snpnum=100)
+
+                hap=haplotype_diversity2G(positions, array, snpnum=50)
+
+                hpg=hp_Bar(hap, int(positions[0]), int(positions[-1]))
+
 
 
                 # Tajimas D
 
-                Taj=Tajimas(array, subpop)
+                #Taj=Tajimas(array, subpop)
 
-                td=moving_tajimas_d(array)
+                #td=moving_tajimas_d(array)
+
+                td=taj_dict_calc(positions, array, subpop, dist)
 
                 #td=taj_dict_calc(positions, array, dist)
 
-                tdg=TD_Bar(td)
+                tdg=TD_Bar(td, int(positions[0]), int(positions[-1]))
 
                 
                 
@@ -619,7 +629,6 @@ def search_out(): # this function will run whenever we go to this route
                                         runtime=runtime,
                                         fst=fst,
                                         Shann=Shann,
-                                        Taj=Taj,
                                         gene_map=gene_map,
                                         Searched_pops=Searched_pops,
                                         bclick=bclick, 
@@ -631,7 +640,9 @@ def search_out(): # this function will run whenever we go to this route
                                         dist=dist,
                                         gd=gd,
                                         tdg=tdg,
-                                        ShannGG=ShannGG
+                                        ShannGG=ShannGG,
+                                        hpg=hpg,
+                                        hp=hp
                                         )
 
 

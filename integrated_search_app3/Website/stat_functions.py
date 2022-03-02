@@ -518,24 +518,35 @@ def calc_hudson_fst(array):
 
 
 # note: Generates a scatter graph if given a dictionary of values
-def FSTscatter(input, start, stop, step):
-    # note: Creates the range caterogies
-    bounds = [
-             (strink(n)+'-'+strink(min(n+step, stop)))
-             for n in range(start, stop, step)
-             ]
-    nstep = math.ceil((stop - start)/step)
+def FSTscatter(input, start, stop):
 
-    
-    # note: Creates a list of nested keys from input dict
     ik = []
     for v in input.values():
         for key in v.keys():
             ik.append(key)
 
+    # note: records the number of steps in the input data
+    vlen = []
+    for v in input.values():
+        vlen.append(len(v.values()))
+    print(vlen)
+
+
+    # note: Calculates the step size of the input data
+    step = int((stop - start)/vlen[0])
+    print(step)
+
+    # note: Creates the range caterogies
+    bounds = [
+             (strink(n)+'-'+strink(min(n+step, stop)))
+             for n in range(start, stop, step)
+             ]
+    print(len(bounds))
+
     # note: Maps each nested key from the input dict to a boundary
-    first = ik[0:nstep]
+    first = ik[0:vlen[0]]
     keydict = dict(zip(first, bounds))
+
 
     # note: Creates df for graph
     df = pd.DataFrame.from_dict(input, orient='index').stack().reset_index()
@@ -651,70 +662,57 @@ def moving_tajimas_d(array):
     
     return moving_Tajima_D
 
-# note: Plots a Barchart for Tajima's D
-def TD_Bar(taj):
 
-    for v in taj.values():
-        nstep = len(v)
+def Tajimas2(genotype_array, subpop):
 
-    steplabels = list(range(1, nstep + 1, 1))
+    # extract genotype array into samples
+    bebG, cheG, esnG, gbrG, pelG = genotype_array
 
-    # note: Creates a nested dictionary for the input
-    nest = {}
-    for k, v in taj.items():
-        nest[k] = dict(zip(steplabels, v))
+    # ONly retain selected populations
+    poplst=[]
+    poplst2=[]
+    for item in subpop:
+        if item == 'BEB':
+            poplst.append('Bengali')
+            poplst2.append(bebG)
 
-    # note: Creates a df for the graph
-    df = pd.DataFrame.from_dict(nest, orient='index').stack().reset_index()
-    df.columns = ['Pop', 'Step', 'TD']
+        elif item == 'GBR':
+            poplst.append('Great Britain')
+            poplst2.append(gbrG)
+        
+        elif item == 'CHB':
+            poplst.append('China')
+            poplst2.append(cheG)
 
-    # note: Plots the graph
-    fig = px.bar(df, x='Step', y='TD', color='Pop', barmode='overlay',
-                 color_discrete_sequence=px.colors.qualitative.G10)
-
-    # note: Sets the fonts and layout
-    fig.update_layout(font_family="Times New Roman",
-                      font_color="Black",
-                      title_font_family="Times New Roman",
-                      title_font_color="Black")
-
-    # note: Creates a range slider
-    fig.update_layout(
-        xaxis=dict(
-            rangeselector=dict(
-                buttons=list([
-                    dict(count=200000,
-                         label="200000bp",
-                         step="all",
-                         stepmode="backward"),
-                    dict(count=400000,
-                         label="400000bp",
-                         step="all",
-                         stepmode="backward"),
-                    dict(count=600000,
-                         label="600000bp",
-                         step="all",
-                         stepmode="backward"),
-                    dict(count=800000,
-                         label="800000bp",
-                         step="all",
-                         stepmode="backward"),
-                    dict(step="all")
-                ])
-            ),
-            rangeslider=dict(
-                visible=True
-            ),
-            type="linear"
-        )
-    )
-
-    graph=pio.to_html(fig)
-
-    return graph
+        elif item == 'PEL':
+            poplst.append('Peru')
+            poplst2.append(pelG)
+        
+        elif item == 'ESN':
+            poplst.append('Nigeria')
+            poplst2.append(esnG)
+        else:
+            pass
 
 
-def taj_dict_calc(positions, array, dividend=1000): 
+
+    Tajima_D = {}
+    
+    for pair,val in zip( combinations([*poplst],1), combinations([*poplst2],1)):
+        
+        ac = allel.GenotypeArray(val[0]).count_alleles()
+       
+        fst = allel.tajima_d(ac)
+    
+        Tajima_D.update({str(pair).strip("(''),") : fst})
+
+    
+    return Tajima_D
+
+
+
+
+def taj_dict_calc(positions, array, subpop, dividend=1000): 
     
     indices = {}
 
@@ -740,7 +738,7 @@ def taj_dict_calc(positions, array, dividend=1000):
             ns+=[item[val[0]:val[-1]]]
         
 
-        results = moving_tajimas_d(ns)
+        results = Tajimas2(ns, subpop)
         #print(results)
         
         
@@ -888,3 +886,410 @@ def ShannonGraph(df):
     graph=pio.to_html(fig)
 
     return graph
+
+
+
+
+
+
+
+
+
+
+
+def haplotype_diversity(array):
+    # extract genotype array into samples
+    bebG, cheG, esnG, gbrG, pelG = array
+    
+    haplotype_diversity = {}
+    
+    # for each population calculate haplotype diversity
+    for pair,val in zip( combinations(['bebG','cheG','esnG','gbrG','pelG'],1), combinations([bebG,cheG,esnG,gbrG,pelG],1)):
+        
+        # biuld genotype array of list of genotypes
+        g = allel.GenotypeArray(val[0])
+        
+        # convert genotype array into haplotype array
+        haplo = g.to_haplotypes()
+        
+        #calculate haplotype_diversity inside the region selected
+        div = allel.haplotype_diversity(haplo)
+    
+        # update dictionary for returning
+        haplotype_diversity.update({str(pair).strip("(''),") : div})
+    
+    return haplotype_diversity
+
+
+
+
+def haplotype_diversity2T(positions, array, snpnum): 
+    
+    indices = {}
+
+    n = math.ceil(len(positions)/snpnum)
+
+    nlst=list(range(n))
+
+    z=enumerate(sorted(positions))
+    z=dict((i,j) for i,j in z)
+    v=0
+    p=snpnum
+    for item in nlst:
+
+        for i in z.keys():
+
+            if i <= p and i >= v:
+
+                indices.setdefault(item, []).append(i)
+            else:
+                pass
+        p+=snpnum
+        v+=snpnum 
+
+    # create a dictionary with the the numbe rof bins and the size of each one
+    positions=z.values()
+    dictiona={}
+
+    count=0
+    y=0
+    for item in positions:
+
+        if count == snpnum:
+
+            count-=snpnum
+            y+=1
+
+        #dictiona[y]+=[item]
+        dictiona.setdefault(y, []).append(item)
+        count+=1
+
+    for item in nlst:
+
+        dictiona[item]=str(dictiona[item][0])+'-'+str(dictiona[item][-1])
+
+
+    
+    # sort the dictionariy
+    indices = dict(sorted(indices.items(), key=lambda x:x[0]))
+    
+    fst_dict1 = {}
+    fst_dict2 = {}
+    index_positions = {}
+
+    for i, val in indices.items():
+
+        ns=[]
+        for item in array:
+            ns+=[item[val[0]:val[-1]]]
+        
+
+        results = haplotype_diversity(ns)
+        #print(results)
+        
+        
+        # update index_positions dictionary as {i : range} pair
+        index_positions.update({i : str(val[0])+':'+str(val[-1])})
+        
+        
+        # update fst_dict2 dictionary as {i : results} pair
+        fst_dict2.update({i : results})
+
+        
+        for k, v in results.items():
+            
+            # nested dictionary as {pops : {index : fst_value}}
+            fst_dict1.setdefault(k, {}).update({i : v})
+
+    
+    inner1=fst_dict1['bebG']
+    inner2=fst_dict1['cheG']
+    inner3=fst_dict1['esnG']
+    inner4=fst_dict1['pelG']
+    inner5=fst_dict1['gbrG']
+
+    bebG_k=list(dictiona.values())
+    bebG_V=list(inner1.values())
+
+    cheG_k=list(dictiona.values())
+    cheG_V=list(inner2.values())
+
+    esnG_k=list(dictiona.values())
+    esnG_V=list(inner3.values())
+
+    pelG_k=list(dictiona.values())
+    pelG_V=list(inner4.values())
+
+    gbrG_k=list(dictiona.values())
+    gbrG_V=list(inner5.values())
+
+
+
+    fst3={'bebG':dict(zip(bebG_k, bebG_V)),
+          'cheG':dict(zip(cheG_k, cheG_V)),
+          'esnG':dict(zip(esnG_k, esnG_V)),
+          'pelG':dict(zip(pelG_k, pelG_V)),
+          'gbrG':dict(zip(gbrG_k, gbrG_V))}
+
+    Tajima = pd.DataFrame(list(fst3.items()),columns = ['Subpopulation',"Tajima's D for Selected Population"]).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id2', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+
+    df=pd.DataFrame.from_dict({(i,j): fst3[i][j] 
+                           for i in fst3.keys() 
+                           for j in fst3[i].keys()},
+                       orient='index').to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id2', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+
+    return df
+
+
+
+
+
+def haplotype_diversity2G(positions, array, snpnum=100): 
+    
+    indices = {}
+
+    n = math.ceil(len(positions)/snpnum)
+
+    nlst=list(range(n))
+
+    z=enumerate(sorted(positions))
+    z=dict((i,j) for i,j in z)
+    v=0
+    p=snpnum
+    for item in nlst:
+
+        for i in z.keys():
+
+            if i <= p and i >= v:
+
+                indices.setdefault(item, []).append(i)
+            else:
+                pass
+        p+=snpnum
+        v+=snpnum 
+
+    # create a dictionary with the the numbe rof bins and the size of each one
+    positions=z.values()
+    dictiona={}
+
+    count=0
+    y=0
+    for item in positions:
+
+        if count == snpnum:
+
+            count-=snpnum
+            y+=1
+        
+
+        #dictiona[y]+=[item]
+        dictiona.setdefault(y, []).append(item)
+        count+=1
+
+    for item in nlst:
+
+        dictiona[item]=str(dictiona[item][0])+'-'+str(dictiona[item][-1])
+
+
+    
+    # sort the dictionariy
+    indices = dict(sorted(indices.items(), key=lambda x:x[0]))
+    
+    fst_dict1 = {}
+    fst_dict2 = {}
+    index_positions = {}
+
+    for i, val in indices.items():
+
+        ns=[]
+        for item in array:
+            ns+=[item[val[0]:val[-1]]]
+        
+
+        results = haplotype_diversity(ns)
+        #print(results)
+        
+        
+        # update index_positions dictionary as {i : range} pair
+        index_positions.update({i : str(val[0])+':'+str(val[-1])})
+        
+        
+        # update fst_dict2 dictionary as {i : results} pair
+        fst_dict2.update({i : results})
+
+        
+        for k, v in results.items():
+            
+            # nested dictionary as {pops : {index : fst_value}}
+            fst_dict1.setdefault(k, {}).update({i : v})
+
+    
+    inner1=fst_dict1['bebG']
+    inner2=fst_dict1['cheG']
+    inner3=fst_dict1['esnG']
+    inner4=fst_dict1['pelG']
+    inner5=fst_dict1['gbrG']
+
+    bebG_k=list(dictiona.values())
+    bebG_V=list(inner1.values())
+
+    cheG_k=list(dictiona.values())
+    cheG_V=list(inner2.values())
+
+    esnG_k=list(dictiona.values())
+    esnG_V=list(inner3.values())
+
+    pelG_k=list(dictiona.values())
+    pelG_V=list(inner4.values())
+
+    gbrG_k=list(dictiona.values())
+    gbrG_V=list(inner5.values())
+
+
+
+    fst3={'bebG':dict(zip(bebG_k, bebG_V)),
+          'cheG':dict(zip(cheG_k, cheG_V)),
+          'esnG':dict(zip(esnG_k, esnG_V)),
+          'pelG':dict(zip(pelG_k, pelG_V)),
+          'gbrG':dict(zip(gbrG_k, gbrG_V))}
+
+
+    return fst3
+
+
+
+# note: Converts 200000 to 2M for better legend formating
+def strink2(num):
+    if len(str(num)) <= 5:
+        snum = str((num/1000))+'k'
+        return snum
+    elif len(str(num)) >= 6:
+        snum = str((num/1000000))+'M'
+        return snum
+    else:
+        pass
+
+
+# note: Plots a Barchart for Tajima's D
+def hp_Bar(input, start, stop):
+    # note: Creates a list of nested keys from input dict
+    ik = []
+    for v in input.values():
+        for key in v.keys():
+            ik.append(key)
+
+    # note: records the number of steps in the input data
+    vlen = []
+    for v in input.values():
+        vlen.append(len(v.values()))
+    print(vlen)
+
+    # note: Calculates the step size of the input data
+    step = int((stop - start)/vlen[0])
+    print(step)
+
+    # note: Creates the range caterogies
+    bounds = [
+             (strink2(n+1)+''+'-'+''+strink2(min(n+step, stop)))
+             for n in range(start, stop, step)
+             ]
+
+    # note: Maps each nested key from the input dict to a boundary
+    first = ik[0:vlen[0]]
+    keydict = dict(zip(first, bounds))
+
+    # note: Creates df for graph
+    df = pd.DataFrame.from_dict(input, orient='index').stack().reset_index()
+    df = df.fillna('')
+    df.columns = ['Pop', 'Step', 'HAP']
+    df['Step'].replace(keydict, inplace=True)
+    print(df)
+
+    print(list(range(start, stop, int((stop - start)/vlen[0]))))
+
+    # note: Plots the graph
+    fig = px.bar(df, y='HAP', x='Step', color='Pop', barmode='overlay',
+                 labels={"Step": "Region on Chromosome (bp) ",
+                         "Pop": "Population Group",
+                         "HAP": "Haplotype Diversity"},
+                 title="Haplotype Diversity",
+                 color_discrete_sequence=px.colors.qualitative.G10)
+
+    # note: Sets the fonts and layout
+    fig.update_layout(font_family="Times New Roman",
+                      font_color="Black",
+                      title_font_family="Times New Roman",
+                      title_font_color="Black")
+
+    # note: Adds range slider
+    fig.update_layout(xaxis=dict(rangeslider=dict(visible=True)))
+
+    graph=pio.to_html(fig)
+
+    return graph
+
+
+
+
+# note: Plots a Barchart for Tajima's D
+def TD_Bar(input, start, stop):
+    # note: Creates a list of nested keys from input dict
+    ik = []
+    for v in input.values():
+        for key in v.keys():
+            ik.append(key)
+
+    # note: records the number of steps in the input data
+    vlen = []
+    for v in input.values():
+        vlen.append(len(v.values()))
+    print(vlen)
+
+    # note: Calculates the step size of the input data
+    step = int((stop - start)/vlen[0])
+    print(step)
+
+    # note: Creates the range caterogies
+    bounds = [
+             (strink2(n+1)+''+'-'+''+strink2(min(n+step, stop)))
+             for n in range(start, stop, step)
+             ]
+    print(bounds)
+
+    # note: Maps each nested key from the input dict to a boundary
+    first = ik[0:vlen[0]]
+    keydict = dict(zip(first, bounds))
+    print(len(keydict))
+
+    # note: Creates df for graph
+    df = pd.DataFrame.from_dict(input, orient='index').stack().reset_index()
+    df = df.fillna('')
+    df.columns = ['Pop', 'Step', 'TD']
+    df['Step'].replace(keydict, inplace=True)
+    print(df)
+
+    # note: Plots the graph
+    fig = px.bar(df, y='TD', x='Step', color='Pop', barmode='overlay',
+                 labels={"Step": "Region on Chromosome (bp) ",
+                         "Pop": "Population Group",
+                         "TD": "Tajima's D"},
+                 title="Tajima's Diversity",
+                 color_discrete_sequence=px.colors.qualitative.G10)
+
+    # note: Sets the fonts and layout
+    fig.update_layout(font_family="Times New Roman",
+                      font_color="Black",
+                      title_font_family="Times New Roman",
+                      title_font_color="Black")
+
+    # note: Adds range slider
+    fig.update_layout(xaxis=dict(rangeslider=dict(visible=True)))
+
+
+    graph=pio.to_html(fig)
+
+    return graph
+
+
+    
+
