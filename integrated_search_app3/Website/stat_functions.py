@@ -1048,7 +1048,7 @@ def haplotype_diversity2T(positions, array, snpnum):
 
     df.columns=['Sub-Population', 'Location', 'Haplotype Diversity']
 
-    df=df.to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id2', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    df=df.to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id3', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
 
 
     return df
