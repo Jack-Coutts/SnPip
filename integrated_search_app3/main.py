@@ -375,6 +375,19 @@ def search_one():
 
     return render_template('search_one.html', map_snp=map_snp)
 
+@app.route('/search_out_snp')
+def search_out_snp():
+    
+    pos = session['pos']
+
+    snp=session['snp']
+
+    # Gene map graph relevant to the search
+    gene_map=gene_list_graph(pos, mydb, 1000000)
+
+    return render_template('search_out_snp.html', gene_map=gene_map, snp=snp)
+
+
 
 @app.route('/search_out', methods=['GET', 'POST']) # this is the search page
 def search_out(): # this function will run whenever we go to this route
@@ -462,6 +475,7 @@ def search_out(): # this function will run whenever we go to this route
                 # Select position for gene distribution table
                 mycursor.execute("SELECT POS FROM snp WHERE ID = %s ", [snp])
                 pos = float(str(mycursor.fetchall()).strip("''[](),")) # Position number
+                session['pos']=pos
 
                 # Gene map graph relevant to the search
                 gene_map=gene_list_graph(pos, mydb, 1000000)
@@ -470,7 +484,7 @@ def search_out(): # this function will run whenever we go to this route
                 runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')  
 
                 # Return the search template with these vairables newly defined 
-                return render_template('search_out.html',
+                return render_template('search_out_snp.html',
                                         runtime=runtime,
                                         gene_map=gene_map,
                                         Searched_pops=Searched_pops,
