@@ -1,6 +1,7 @@
 # Shannon Diveristy
 import math
 from math import log as ln
+from operator import index
 # FST
 import numpy as np
 import pandas as pd
@@ -18,6 +19,8 @@ import plotly.io as pio
 import plotly.graph_objects as go
 
 import csv
+
+from sqlalchemy import column
 
 
 
@@ -1031,12 +1034,22 @@ def haplotype_diversity2T(positions, array, snpnum):
           'pelG':dict(zip(pelG_k, pelG_V)),
           'gbrG':dict(zip(gbrG_k, gbrG_V))}
 
-    Tajima = pd.DataFrame(list(fst3.items()),columns = ['Subpopulation',"Tajima's D for Selected Population"]).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id2', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    
+    user_ids = []
+    frames = []
 
-    df=pd.DataFrame.from_dict({(i,j): fst3[i][j] 
-                           for i in fst3.keys() 
-                           for j in fst3[i].keys()},
-                       orient='index').to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id2', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    for user_id, d in fst3.items():
+        user_ids.append(user_id)
+        frames.append(pd.DataFrame.from_dict(d, orient='index'))
+
+    df=pd.concat(frames, keys=user_ids)
+
+    df=df.reset_index()
+
+    df.columns=['Sub-Population', 'Location', 'Haplotype Diversity']
+
+    df=df.to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id2', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+
 
     return df
 
