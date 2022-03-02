@@ -39,7 +39,7 @@
            placeholder="E.g. rs999980 or ACTR3BP7 or 11124625-15303188" 
            name="snp" class="form-control" required>
    <!-- Select dropdown menu -->
-   <select name="select" required class="custom-select" >
+   <select name="select" required class="custom-select" id="dis">
        <option disabled selected value="">Search by</option>
        <option value="SNP Name">SNP Name</option>
        <option value="Gene Name">Gene Name</option>
@@ -73,7 +73,7 @@
   </div>
     <!-- Search/Submit button -->
    <div>
-        <button type="submit" class="btn btn-primary" onclick="$('#loading').show();"  id="register"  disabled="disabled">Search</button>
+        <button type="submit" class="btn btn-primary" onclick="$('#loading').show();"  id="enab"  disabled="disabled">Search</button>
     </div>
 
 </form>
