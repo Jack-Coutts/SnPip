@@ -1,21 +1,11 @@
-
-
-$(document).ready(function(){ // function disables search/submit button when the input form is not filled
-(function() {
-    $('form > input').keyup(function() {
-
-        var empty = false;  // if input form empty
-        $('form > input').each(function() {
-            if ($(this).val() == '') {
-                empty = true;
-            }
-        });
-
-        if (empty) {
-            $('#register').attr('disabled', 'disabled'); // disable is empty
-        } else {
-            $('#register').removeAttr('disabled'); // remove dissable attribute is input filled 
-        }
+  $(document).ready(function(){ //Disable submit button when option not selected
+    const select = document.getElementById('dis'); // get item with id 'dis' 
+    const submitButton = document.getElementById('enab'); // get item with id enab
+    document.getElementById('dis').addEventListener('change', () => { //if there is a change in value in item with dis id
+      if (select.value === '') {
+        submitButton.disabled = true;  //if value empty disable submit 
+      } else {
+        submitButton.disabled = false; // else enable 
+      }
     });
-})()
-});
+  });
