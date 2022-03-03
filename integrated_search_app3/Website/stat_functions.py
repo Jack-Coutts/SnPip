@@ -246,11 +246,11 @@ def makeArray(strings):
 
             lst.append(p)
 
+    
     for string in lst:
         string = string.strip()
         genotypes = {}
-        N = len(string)
-
+        
         for i, c in enumerate(string):
             # take sample as key and 0|1 etc as value
             genotypes.setdefault(dic[c], []).append(ginfo[nested_dictionary[dic[c]][c]])
