@@ -10,6 +10,9 @@ Connecting your machine to the SnPip database stored on in a google cloud instan
 
 2. In the navigation menu (the three bars located on the top left of the website) select SQL, this will bring up the snpip database.
 
+![image](https://user-images.githubusercontent.com/83500298/156592202-d59d61ad-5c3f-4868-b72f-3fc01a022546.png)
+
+
 3. Select the snpip database (directly bellow the instance ID) This will bring you to the snpip db overview page.
 
 4. From the overview page select the connections tab
