@@ -65,7 +65,7 @@
      
         <hr>
         <h4><a href="#intro"> Introduction </a></h4>
-        <h4> <a href="#fra"> Framework </a></h4>
+        <h4> <a href="#fra"> Methodology </a></h4>
         <ol>
             <li> <a href="#aim"> Aim </a> <br></li>
             <li> <a href="#data"> Data </a> <br></li>
@@ -113,15 +113,15 @@
 
         <hr>
 
-        <p>The term single nucleotide polymorphism (SNP) refers to a variation of a single base pair in a complementary DNA double strand. SNPs are inherited and heritable genetic variants. The term mutation is to be distinguished from SNPs, which usually refers to a newly occurring change. SNPs represent about 90 % of all genetic variants in the human genome. They are not evenly distributed but occur unevenly in certain regions. Two-thirds of all SNPs consist of the exchange of cytosine for thymine, since cytosine in the vertebrate genome is converted by methylation into 5-methylcytosine, which can then deaminate to thymine.</p>
+        <p>The term single nucleotide polymorphism (SNP) refers to a variation of a single base pair in a complementary DNA double strand. SNPs can be inherited and heritable genetic variants. SNPs represent the largest category of genetic variation in the human genome (Shen et al., 1999, Ramírez-Bello and Jiménez-Morales, 2017), occurring at a frequency of roughly one every 1000 base pairs (Shastry, 2009). SNPs are typically found in clusters which are unevenly distributed along the genome (Koboldt et al., 2006) and can be found in non-coding sequences (outside of genes, as well as in introns), or in exons that are transcribed into proteins. In the latter case, a distinction is made between so-called "silent" or "synonymous" SNPs, which change the nucleotide sequence but do not change the amino acid sequence derived from it due to the degeneracy of the genetic code, and "non-synonymous" SNPs that lead to an amino acid change at the codon in question. Even if a SNP is in a non-coding genomic region, it can influence gene transcription (regulatory SNPs) if, for example, it is in DNA segments to which transcription factors (enhancers, silencers) or RNA polymerases bind (promoters). SNPs in an intron can also result in a "cryptic" splice site, for example. </p>
 
         <p>
-            In the past, little attention was paid to SNPs, especially when they were located in non-coding gene segments. They were thought to be largely meaningless variants. Through large-scale genome-wide association studies, it is now known that some SNPs influence the risk of certain diseases in complex ways, many of which are not understood. This applies, for example, to individual non-coding SNPs in the human genes IKZF1, ARID5B and CEBPE and the associated risk of developing acute lymphoblastic leukaemia (Papaemmanuil et al., 2009).
+            In the past, little attention was paid to SNPs, especially when they were located in non-coding gene segments. They were thought to be largely meaningless variants. Through large-scale genome-wide association studies, it is now known that some SNPs influence the risk of certain diseases in complex ways, many of which are not understood. This applies, for example, to individual non-coding SNPs in the human genes IKZF1, ARID5B and CEBPE and the associated risk of developing acute lymphoblastic leukemia (Papaemmanuil et al., 2009). 
         </p>
 
 
         <p>
-            In recent years, research on SNPs has advanced rapidly, requiring further applications in which they can be analysed more intensively. SNPip was created as a web application to support this progress and make it easier for researchers to work with advanced statistical methods.
+            In recent years, research on SNPs has advanced rapidly, requiring further applications in which they can be analysed more intensively. SNPip was created as a web application to support this progress and increase the availability of SNP summary statistics for human chromosome 22. 
         </p>
     
 
@@ -131,7 +131,7 @@
 
 
     <div id="fra" style="text-align: center;">
-    <h2>Framework</h2> 
+    <h2>Methodology</h2> 
     </div>
    
 
@@ -146,7 +146,7 @@
     <div class="para">
 
 
-        <p>The SNPip webserver provides a broad database containing SNP information from chromosome 22. The main functions of SNPip relie on basic data search by chromosomal location, gene name and SNP name for a subset of 5 populations. The search query outputs basic statistics for allele frequency and genotype frequency for every subpopulation. Additionally, if multiple SNPs are selected it contains summary statistics for genetic diversity, haplotype diversity and Tajimas D. If multiple populations are selected it contains statistics of pairwise genetic distance and delta Tajimas-D.</p> 
+        <p>The SNPip webserver exploits a large database containing SNP information for human chromosome 22. The main functions of SNPip involve searching a MySQL database by chromosomal location, gene name or SNP name for a subset of 5 subpopulations. The search query outputs basic statistics for allele frequency and genotype frequency for every subpopulation. Additionally, if multiple SNPs are selected it contains summary statistics for genetic diversity, haplotype diversity and Tajimas D. If multiple populations are selected it contains statistics of pairwise genetic distance and delta Tajimas-D. </p> 
 
         <br>
 
@@ -187,10 +187,10 @@
         <br>
 
         <p>
-            SNPsnap uses 1000 Genomes Project Phase 3 variants data from ENSEMBLs ftp server <a href="http://ftp.ensembl.org/pub/grch37/current/data_files/homo_sapiens/GRCh38/" target="_blank">(http://ftp.ensembl.org/pub/grch37/current/data_files/homo_sapiens/GRCh38/) </a> ( The 1000 Genomes Project Consortium 2015, Howe et al., 2021). This data originally comes from the 1000 Genomes Phase3 pipeline remapped from GRCh37 using dbSNP rsIDs remapped to GRCh38. Furthermore it contains definitions of the super populations of European, East Asian, South East Asian, American and African from 1000 Genomes browser. Super populations are defined by using the 1000G panel file.
+            SNPip uses 1000 Genomes Project Phase 3 variants data from ENSEMBLs ftp server <a href="http://ftp.ensembl.org/pub/grch37/current/data_files/homo_sapiens/GRCh38/" target="_blank">(http://ftp.ensembl.org/pub/grch37/current/data_files/homo_sapiens/GRCh38/) </a> ( The 1000 Genomes Project Consortium 2015, Howe et al., 2021). This data originally comes from the 1000 Genomes Phase3 pipeline remapped from GRCh37 using dbSNP rsIDs remapped to GRCh38. Furthermore it contains definitions of the super populations of European, East Asian, South East Asian, American and African from 1000 Genomes browser. Super populations are defined by using the 1000G panel file.
         </p> 
 
-           <p> The data only contains high confidence calls for ALT alleles and positions that have passed all filters.<br>
+           <p> TThe database contains biallelic SNPs and only phased genotype data derived from preprocessing the phase 3 genotype data. SNPip contains only single nucleotide variants (SNPs). Indels and larger structural variants have been removed and only contains high confidence calls for ALT alleles and positions that have passed all filters.<br>
 
             <span class="text-danger"> <b> SNPip contains SNPs located on chromosomes 22 (February 2022) </b> </span>
         </p>
@@ -252,16 +252,26 @@
 
         <br>
 
-        <p> The data for these subpopulations are stored in two tables. The first table is an SNP focused table containing information on the SNPs chromosome, 
-        position on said chromosome, the SNP ID, its alternate and reference ID as well as some aggregate genotype statistics based on all five genotypes. 
-        The other table contains information on each of the subpopulations. It consists of the SNP ID followed by its subpopulation and then its 
-        subpopulation specific allele and genotype frequencies.</p>
-
-
+  
         <img src="/static/schema.png" alt="database schema" width="60%" height="60%">
-            <figcaption style="color: darkgrey;"><i>SnPip uses a relational database, and the two tables are connected via foreign key linking the SNP ID of each table. This foreign key has a many to one relationship as the SNP ID on the SNP table can reference multiple rows in the Subpopulation table (the same SNP multiple times for each different subpopulation). The Database schema used in the SnPip application.</i></figcaption>
+            <figcaption style="color: darkgrey;"><i> The Database schema used in the SnPip application. </i></figcaption> <br> <br>
 
 
+                <p>
+                    SNPip uses a relational database hosted on the google cloud sever, within a SQL instance, naturally allowing for remote access to the SNP data stored within it. The SNPip search app can then connect to the database through its public IP address. 
+                </p>
+
+
+                <p> 
+
+                    The data for these subpopulations are stored in two tables. The first table is an SNP focused table containing information on the SNPs chromosome, position on said chromosome, the SNP ID, its alternate and reference ID as well as some aggregate genotype stats based on all five genotypes.  In order to reduce the time it takes to retrieve information from the database, proper indexing of each table in the database had to be achieved. In the SNP table this is done through the use of an auto incrementing primary key, which assigned each row a numerical value which increased with each row added to the table. The RsID of each SNP was also used as an index inside this table, allowing for it to be used as a foreign key linking both tables. The ID column of the SNP table has a one (SNP table) to many (Subpopulation Table) relationship.   </p>
+
+                    <p>
+ 
+                    The other table contains information on each of the subpopulations. It consists of the SNP ID followed by its subpopulation and then its subpopulation specific allele frequency and genotype stats. Each SNP in this table has 5 entries, one for each subpopulation: British in England and Scotland (GBR), Han Chinese in Bejing, China (CHB), Esan in Nigeria (ESN), Bengali in Bangladesh (BEB), Peruvian in Lima, Peru (PEL). Due to each SNP having multiple entries in the subpopulation table, maintenance of the data in this table can become slow and cumbersome. In order to circumvent this, a hybrid primary key was assigned to each entry in the table. This key consisted of each rows’ SNP ID and the subpopulation that its statistics are related to. In doing so, better indexing of the table is achieved as the duplicate SNP IDs have in essence been removed.   
+
+                    Through the use of a relational database and purposeful parsing of relevant information with regards to our aims, SNPip was able to reduce the size of said database by approximately 30% (the initial chromosome 22 vcf file was 10gb as opposed to the 7gb size of the current database). 
+                </p>
         <br>
 
 
@@ -306,7 +316,7 @@
             <br>
 
         <p>
-        When selecting the data, we decided for Phase 3 data from the 100 Genomes project since this contains the latest up to date sequencing and variant call data. For further processing the .vcf.gz and the .tbi data has been loaded and stored in the same folder.
+        Phase 3 data from the 1000 Genomes project was selected as it contains recent sequencing and variant call information. For further processing the .vcf.gz and the .tbi data was loaded and stored in the same folder. 
 
         </p>
 
@@ -315,7 +325,7 @@
         <br>
 
         <p>
-        The processing of the data was done on bcftools, vcftools and tabix (Heng et al., 2009, Danecek et al., 2011, Danecek et al., 2021. To subset the data into subpopulations of interest the 1000G panel file has been used and each subpopulation was copied into a .txt file containing only samples from this subpopulation. Subseqeuently five .txt files containing only the samples of the used subpopulations have been created.
+        The processing of the 1000 genome data was done with bcftools, vcftools and tabix (Heng et al., 2009, Danecek et al., 2011, Danecek et al., 2021). To subset the data into subpopulations of interest the 1000G panel file  was used and each subpopulation was copied into a .txt file containing only samples from this subpopulation. Subsequently, five .txt files containing only the samples of the used subpopulations were created. 
         </p>
 
         <mark style="background-color: darkgrey;"> 
@@ -329,7 +339,7 @@
         <br>
 
         <p>
-        Furthermore, after subsetting the data the gene annotation has been added. Therefore, a gene file for Chromosome 22 containing all start and end positions from the UCSC Table Browser (Kent et al., 2002) has been downloaded and converted into a bed file and then indexed by tabix.
+        Furthermore, after subsetting the data the gene annotation was added. A gene file for Chromosome 22 containing all start and end positions from the UCSC Table Browser (Kent et al., 2002) was downloaded and converted into a bed file and then indexed by tabix. 
         </p>
 
         <mark style="background-color: darkgrey;"> 
@@ -365,7 +375,7 @@
         <br>
         
 
-        <p> In diploid systems multiallelic sites are often ignored because even nowadays methods struggle to operat on multi-allelic variants in an accurate manner and thus can create strongly misleading association (Campbell et. al., 2016, Jiang et al., 2020). Therefore, we decided to not use them for further statistics. To delete multiallelic sides and exclude indels the following command in bcftools was used.
+        <p> In diploid systems multiallelic sites are often ignored because many modern methods struggle to include multi-allelic variants in an accurate manner and creating a strongly misleading association (Campbell et. al., 2016, Jiang et al., 2020). Therefore, we decided to not use them for further statistics. To delete multiallelic sites and exclude indels, the following command in bcftools was used.  
         </p>
 
         <mark style="background-color: darkgrey;"> 
@@ -400,7 +410,7 @@
 
         <h4> Decoding and Encoding Genotype Data for/from MySQL </h4><br>
 
-            <p>In order to get the genotype information inside the database, SNPip uses an encoder that converts the phased genotypes from 0 and 1 format into a string for each SNP. Explicitly, the genotype data was divided into the four possible genotypes of 0|0 (homozygousref), 0|1 (heterozygousref), 1|0 (heterozygousalt) and 1|1 (homozygousalt) and then encoded using the following algorithm:</p>
+            <p>In order to get the genotype information inside the database, SNPip uses an encoder that converts the phased genotypes from 0 and 1 format into a string for each SNP. Explicitly, the genotype data was divided into the four possible genotypes of 0|0 (homozygous-ref), 0|1 (heterozygous-ref), 1|0 (heterozygous-alt) and 1|1 (homozygous-alt) and then encoded using the following algorithm:</p>
 
             <p>
             1|0 = “a” <br>
@@ -426,7 +436,7 @@
             &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &nbsp;'CHB' : { 'a' : 'u' , 'b' : 'v' , 'c' : 'w' , 'd' : 'x' }}<br>
             </p>
 
-            <p>In conclusion the resulting string of each SNPs genotype data was constructed out of letters from “e-z”. In the next step when searching on the website the string gets decoded to the actual genotype information data by creating a 3D list from the nested_dictionary.</p>
+            <p>In conclusion the resulting string of each SNPs genotype data was constructed out of letters from “e-z” and the index of the string informed the decoder of the specific sample the genotype referred to. In the next step when searching on the website the string gets decoded to the actual genotype information data by creating a 3D list from the nested_dictionary. </p>
 
 
 
@@ -441,7 +451,7 @@
         <br>
 
         <p> 
-            For the calculation of Haplotype Diversity, Tajima-D and Hudson-FST the python package scikit allel has been used. Shannon Diversity as an index of genetic diversity has been computed separately. To get the most out of the functions the genotype data from the obtained VCF file has been decoded into a 3D-list of genotypes for every sample out of each SNP and in the further course processed into a genotype array as most of allel’s function require 3D Arrays as input data.
+            For the calculation of Haplotype Diversity, Tajima-D and Hudson-FST the python package scikit allel has been used. Shannon Diversity as an index of genetic diversity has been computed separately. Genotype data from the database was decoded into a 3D-list of genotypes for every sample and every SNP to be used with scikit allel.  
 
             The list of genotype data is encoded in the following 3D list format from the database: </p>
 
@@ -461,8 +471,7 @@
             </div>
            <br>
 
-            <p >Haplotype Diversity represents the propability of two randomly sampled alleles being different. Here, a haplotype array for the region of interest gets created by using the genotype data stored in the database. Furthermore, the function allel.haplotype_diversity generates an estimate of haplotype diversity.
-            </p>
+            <p >Haplotype Diversity represents the probability of two randomly sampled alleles being different. Here, a haplotype array for the region of interest gets created by using the genotype data stored in the database. Furthermore, the function allel.haplotype_diversity generates an estimate of haplotype diversity.  
 
 
 
@@ -493,7 +502,7 @@
 
             <p>
 
-                The estimate of haplotype diversity is calculated over the whole selected region. Furthermore, for visualization SNPip computes the data in bins over the region to enable the user a very precise analysis. The values obtained from this function are in between 0 and 1. Where “0” accounts for a locus consisting of mainly one haplotype and “1” referring to a very diverse region with several haplotypes.
+                The estimate of haplotype diversity is calculated over the whole region selected by the user. Furthermore, for visualization SNPip computes the data in bins over the region to enable precise analysis. The values obtained from this function are in between 0 and 1. Where “0” accounts for a locus consisting of mainly one haplotype and “1” refers to a very diverse region with several haplotypes. The following graph describes a statistical output for haplotype diversity delivered by SNPip. By clicking the subpopulations on the right, it is possible to highlight only certain subpopulations. Furthermore, the haplotype diversity is calculated in small bins over the whole locus making it possible to analyze smaller partitions. Moreover, an info box opens by hovering over a specified bar showing additional information including subpopulation selected, region on chromosome and the value for haplotype diversity inside the selected range. To make comparison easier it is also possible to slide through the whole region and zoom into desired ranges. Additionally, a screenshot can be taken by clicking on the camera on the top right (Figure 1). 
 
             </p>
 
@@ -533,7 +542,7 @@
 
             <p>
 
-                 Natural populations can sustain a certain amount of variation which is dependent on the population size and the amount of variation. Consequently, by generating a value to estimate how much variation a population should be able to sustain helps to understand and determine this problem. Being able to infer deviation from that expectation is useful to understand whether a particular kind of selection is going on. Consequently, Tajimas D is a test against neutrality to see if the SNPs are subject to selection within a population and computes an average number of pairwise differences in between base pairs of various population samples and compares it to the total number of variant sites in that sample. Subsequently, it compares two sequences on either evolving randomly versus one evolving in a non-random manner. Explicitly, mutations that occur randomly are unbiased (neutral) and the one’s undergoing selection are biased. The test requires at least three homologous DNA sequences to identify these which do not go with the neutral theory and consequently have no effects on fitness and survival (Tajima, 1989).
+                 Natural populations can sustain a certain amount of variation which is dependent on the population size and the amount of variation occuring. Consequently, by generating a value to estimate how much variation a population should be able to sustain helps to understand and determine this problem. Being able to infer deviation from that expectation is useful to understand whether a particular kind of selection is going on. Consequently, Tajimas D is a test against neutrality to see if the SNPs are subject to selection within a population and computes an average number of pairwise differences in between base pairs of various population samples and compares it to the total number of variant sites in that sample. Subsequently, it compares two sequences on either evolving randomly versus one evolving in a non-random manner. Explicitly, mutations that occur randomly are unbiased (neutral) and the one’s undergoing selection are biased. The test requires at least three homologous DNA sequences to identify these which do not go with the neutral theory and consequently have no effects on fitness and survival (Tajima, 1989). 
 
 
             </p> 
@@ -1011,6 +1020,12 @@
                  
 
                 <li>Weir, B. S., & Cockerham, C. C. (1984). Estimating F-Statistics for the Analysis of Population Structure. Evolution, 38(6), 1358–1370. https://doi.org/10.2307/2408641 </li>
+
+                <li>Koboldt, D.C., Miller, R.D., Kwok, P.-Y., 2006. Distribution of Human SNPs and Its Effect on High-Throughput Genotyping. Hum Mutat 27, 249–254. https://doi.org/10.1002/humu.20286 
+                </li>
+                <li>Ramírez-Bello, J., Jiménez-Morales, M., 2017. [Functional implications of single nucleotide polymorphisms (SNPs) in protein-coding and non-coding RNA genes in multifactorial diseases]. Gac Med Mex 153, 238–250. </li>
+                <li>Shastry, B.S., 2009. SNPs: impact on gene function and phenotype. Methods Mol Biol 578, 3–22. https://doi.org/10.1007/978-1-60327-411-1_1 </li>
+                <li>Shen, L.X., Basilion, J.P., Stanton, V.P., 1999. Single-nucleotide polymorphisms can cause different structural folds of mRNA. Proc Natl Acad Sci U S A 96, 7871–7876. </li>
 
 
             </ol>
