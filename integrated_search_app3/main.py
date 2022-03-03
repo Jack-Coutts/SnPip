@@ -64,6 +64,10 @@ def No_SNP(): # this function will run whenever we go to this route
 def No_Subpop(): # this function will run whenever we go to this route
     return render_template('No_Subpop.html')
 
+@app.route('/max_window') # Error page for when maximum search window is exceeded
+def max_window():
+    return render_template('max_window.html')
+
 @app.route('/snp_info') # this page produces a table with the SNP information
 def snp_info(): # this function will run whenever we go to this route
 
@@ -693,167 +697,173 @@ def search_out(): # this function will run whenever we go to this route
             except:
                 return render_template('No_Position.html') # no positions error page
 
-            # Save start and end positions as variable that can be called on other pages
-            session['areastart']=areastart
-            session['areaend']=areaend
 
-            # Create a string of the sub-populations searched to output to the user 
-            sp=str(subpop).strip("[]")
-            sp=sp.replace("'","")
-            Searched_pops='Sub-Populations searched: ' + sp + '.'
+            if areaend-areastart > 1000000:
 
-            # Check that search range is in the databse
-            mycursor.execute("SELECT POS FROM snp") # Select all positions from snp table
-            snptbl_position=mycursor.fetchall() # list of tuples of strings of all positions
-            snptbl_position=[float(a) for item in snptbl_position for a in item] # list of strings of all positions
+                return render_template('max_window.html')
+            else:
 
-            # Count the number of positions within the specified range found in the database
-            not_out_of_bounds=0
-            for item in snptbl_position:
+                # Save start and end positions as variable that can be called on other pages
+                session['areastart']=areastart
+                session['areaend']=areaend
 
-                if item > areastart and item < areaend: # if position falls in given range
-                    not_out_of_bounds+=1
-                else:
-                    pass
-            
-            if not_out_of_bounds > 0: # If positon range given conatains at least one snp
+                # Create a string of the sub-populations searched to output to the user 
+                sp=str(subpop).strip("[]")
+                sp=sp.replace("'","")
+                Searched_pops='Sub-Populations searched: ' + sp + '.'
 
+                # Check that search range is in the databse
+                mycursor.execute("SELECT POS FROM snp") # Select all positions from snp table
+                snptbl_position=mycursor.fetchall() # list of tuples of strings of all positions
+                snptbl_position=[float(a) for item in snptbl_position for a in item] # list of strings of all positions
 
-                # Search the SNP table for all SNPs in that gene - for counting
-                mycursor.execute("SELECT ID FROM snp WHERE %s <= POS AND POS <= %s ", (areastart, areaend ))
-                allsnps=mycursor.fetchall()
-                snps = len(allsnps) # Store data in a list
-                # String containing the number of SNPs in the gene - counter
-                num_snps = ('Number of SNPs found in the range of ' + str(areastart) + ' - ' + str(areaend) + ': ' + (str(snps) + '.'))
+                # Count the number of positions within the specified range found in the database
+                not_out_of_bounds=0
+                for item in snptbl_position:
 
-                # Gene map graph relevant to the search
-                gene_map=gene_list_graph(areastart, mydb, 1000000)
-
-
-                ################ FST #######################
-
-                # Select genotype string for SNPs in searched gene
-                mycursor.execute("SELECT GT FROM snp WHERE %s <= POS AND POS <= %s ", (areastart, areaend ))
-                geno_list = mycursor.fetchall()
-
-                #Make genotype array
-                array=makeArray(geno_list)
-
-                #### create FST table ####
-                fst_T = all_hudson_fsts(array, subpop)
-
-                #### Creating an FST graph ####
-                # Select all positions in the gene region
-                mycursor.execute("SELECT POS FROM snp WHERE %s <= POS AND POS <= %s ", (areastart, areaend ))
-                positions=mycursor.fetchall()
-                positions=[float(a) for item in positions for a in item] # convert output to a list of strings
-                # Sort the positions in ascending order
-                sorting=positions
-                sorting.sort(reverse=False, key=float)
-
-                # Create a variable of the distance between the first and final positions
-                dist=(sorting[-1]-sorting[0])
-                dist=int(0.1*dist) # define dist as 10% of the total distance between first and last position
-                
-                # Create a dictionary that can be used as input for the graph function
-                fst_G=fst_dict_calc(positions, array, subpop, dist ) # Outputs a nested dictionry with FST for each bin and for each subpop
-
-                # Generate html graph from the first and last positions of the gene
-                fst_G=FSTscatter(fst_G, int(positions[0]), int(positions[-1]))
-
-                
-                #################### Shannon Diversity #######################
-
-                # Empty lists of tuples of strings for subpops not selected
-                BAF=[('1')]
-                GAF=[('1')]
-                CAF=[('1')]
-                PAF=[('1')]
-                EAF=[('1')]
-
-                # Extract allele frequency data from databse for selected populations
-                for item in subpop:
-
-                    if item == 'BEB': # If population selected
-                        mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
-                        BAF=mycursor.fetchall() #list of tuples
-
-                    elif item == 'GBR':
-                        mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
-                        GAF=mycursor.fetchall() #list of tuples
-                    
-                    elif item == 'CHB':
-                        mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
-                        CAF=mycursor.fetchall() #list of tuples
-
-                    elif item == 'PEL':
-                        mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
-                        PAF=mycursor.fetchall() #list of tuples
-                    
-                    elif item == 'ESN':
-                        mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
-                        EAF=mycursor.fetchall() #list of tuples
-                    
+                    if item > areastart and item < areaend: # if position falls in given range
+                        not_out_of_bounds+=1
                     else:
                         pass
                 
-            
-                # Calculate shannon diversity
-                # Create shannon diversity tabele
-                shan_T=Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop)
-                # Produce dictionary input for shannon diversity graoh function
-                shan_G=ShannonG(allsnps, BAF, GAF, CAF, PAF, EAF, subpop, positions)
-                # Create shannon diversity graoh
-                shan_G=ShannonGraph(shan_G)
+                if not_out_of_bounds > 0: # If positon range given conatains at least one snp
 
 
-                #################### Tajimas D ######################
+                    # Search the SNP table for all SNPs in that gene - for counting
+                    mycursor.execute("SELECT ID FROM snp WHERE %s <= POS AND POS <= %s ", (areastart, areaend ))
+                    allsnps=mycursor.fetchall()
+                    snps = len(allsnps) # Store data in a list
+                    # String containing the number of SNPs in the gene - counter
+                    num_snps = ('Number of SNPs found in the range of ' + str(areastart) + ' - ' + str(areaend) + ': ' + (str(snps) + '.'))
 
-                # Create Tajimas D table
-                taj_T=Tajimas(array, subpop)
-                # Create input dictionary for Tajimas graph function
-                taj_G=taj_dict_calc(positions, array, subpop, dist/2)
-                # Create tajimas d graph for positions of specified gene
-                taj_G=TD_Bar(taj_G, int(positions[0]), int(positions[-1]))
+                    # Gene map graph relevant to the search
+                    gene_map=gene_list_graph(areastart, mydb, 1000000)
 
 
-                ################## Haplotype diversity #######################
+                    ################ FST #######################
 
-                # Create haplotype diversity table
-                haplo_T=haplotype_diversity2T(positions, array, subpop, snpnum=100)
-                # Create dictionary input for haplotype diversity graph function
-                haplo_G=haplotype_diversity2G(positions, array, subpop, snpnum=50)
-                # Create haplotype diversity graph
-                haplo_G=hp_Bar(haplo_G, int(positions[0]), int(positions[-1]))
+                    # Select genotype string for SNPs in searched gene
+                    mycursor.execute("SELECT GT FROM snp WHERE %s <= POS AND POS <= %s ", (areastart, areaend ))
+                    geno_list = mycursor.fetchall()
 
+                    #Make genotype array
+                    array=makeArray(geno_list)
+
+                    #### create FST table ####
+                    fst_T = all_hudson_fsts(array, subpop)
+
+                    #### Creating an FST graph ####
+                    # Select all positions in the gene region
+                    mycursor.execute("SELECT POS FROM snp WHERE %s <= POS AND POS <= %s ", (areastart, areaend ))
+                    positions=mycursor.fetchall()
+                    positions=[float(a) for item in positions for a in item] # convert output to a list of strings
+                    # Sort the positions in ascending order
+                    sorting=positions
+                    sorting.sort(reverse=False, key=float)
+
+                    # Create a variable of the distance between the first and final positions
+                    dist=(sorting[-1]-sorting[0])
+                    dist=int(0.1*dist) # define dist as 10% of the total distance between first and last position
+                    
+                    # Create a dictionary that can be used as input for the graph function
+                    fst_G=fst_dict_calc(positions, array, subpop, dist ) # Outputs a nested dictionry with FST for each bin and for each subpop
+
+                    # Generate html graph from the first and last positions of the gene
+                    fst_G=FSTscatter(fst_G, int(positions[0]), int(positions[-1]))
+
+                    
+                    #################### Shannon Diversity #######################
+
+                    # Empty lists of tuples of strings for subpops not selected
+                    BAF=[('1')]
+                    GAF=[('1')]
+                    CAF=[('1')]
+                    PAF=[('1')]
+                    EAF=[('1')]
+
+                    # Extract allele frequency data from databse for selected populations
+                    for item in subpop:
+
+                        if item == 'BEB': # If population selected
+                            mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                            BAF=mycursor.fetchall() #list of tuples
+
+                        elif item == 'GBR':
+                            mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                            GAF=mycursor.fetchall() #list of tuples
+                        
+                        elif item == 'CHB':
+                            mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                            CAF=mycursor.fetchall() #list of tuples
+
+                        elif item == 'PEL':
+                            mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                            PAF=mycursor.fetchall() #list of tuples
+                        
+                        elif item == 'ESN':
+                            mycursor.execute("SELECT FORMAT(AF, 5) FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s) ", (areastart, areaend ))
+                            EAF=mycursor.fetchall() #list of tuples
+                        
+                        else:
+                            pass
+                    
                 
-                # Return runtime of search/data extraction
-                runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
+                    # Calculate shannon diversity
+                    # Create shannon diversity tabele
+                    shan_T=Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop)
+                    # Produce dictionary input for shannon diversity graoh function
+                    shan_G=ShannonG(allsnps, BAF, GAF, CAF, PAF, EAF, subpop, positions)
+                    # Create shannon diversity graoh
+                    shan_G=ShannonGraph(shan_G)
 
-                # Return the search template with these vairables newly defined
-                return render_template('search_out.html',
-                                        num_snps=num_snps,
-                                        runtime=runtime,
-                                        gene_map=gene_map,
-                                        Searched_pops=Searched_pops,
-                                        bclick=bclick, 
-                                        gclick=gclick,
-                                        cclick=cclick,
-                                        pclick=pclick,
-                                        eclick=eclick,
-                                        fst_T=fst_T,
-                                        fst_G=fst_G,
-                                        shan_T=shan_T,
-                                        shan_G=shan_G,
-                                        taj_T=taj_T,
-                                        taj_G=taj_G,
-                                        haplo_T=haplo_T,
-                                        haplo_G=haplo_G
-                                        )
 
-            else:
+                    #################### Tajimas D ######################
 
-                return render_template('No_Position.html') # Location not valid error
+                    # Create Tajimas D table
+                    taj_T=Tajimas(array, subpop)
+                    # Create input dictionary for Tajimas graph function
+                    taj_G=taj_dict_calc(positions, array, subpop, dist/2)
+                    # Create tajimas d graph for positions of specified gene
+                    taj_G=TD_Bar(taj_G, int(positions[0]), int(positions[-1]))
+
+
+                    ################## Haplotype diversity #######################
+
+                    # Create haplotype diversity table
+                    haplo_T=haplotype_diversity2T(positions, array, subpop, snpnum=100)
+                    # Create dictionary input for haplotype diversity graph function
+                    haplo_G=haplotype_diversity2G(positions, array, subpop, snpnum=50)
+                    # Create haplotype diversity graph
+                    haplo_G=hp_Bar(haplo_G, int(positions[0]), int(positions[-1]))
+
+                    
+                    # Return runtime of search/data extraction
+                    runtime=('Search time: '+ str(time.time() - start_time)+ ' seconds.')
+
+                    # Return the search template with these vairables newly defined
+                    return render_template('search_out.html',
+                                            num_snps=num_snps,
+                                            runtime=runtime,
+                                            gene_map=gene_map,
+                                            Searched_pops=Searched_pops,
+                                            bclick=bclick, 
+                                            gclick=gclick,
+                                            cclick=cclick,
+                                            pclick=pclick,
+                                            eclick=eclick,
+                                            fst_T=fst_T,
+                                            fst_G=fst_G,
+                                            shan_T=shan_T,
+                                            shan_G=shan_G,
+                                            taj_T=taj_T,
+                                            taj_G=taj_G,
+                                            haplo_T=haplo_T,
+                                            haplo_G=haplo_G
+                                            )
+
+                else:
+
+                    return render_template('No_Position.html') # Location not valid error
 
 
         

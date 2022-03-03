@@ -68,7 +68,7 @@ def gene_list_graph(position, database, increment_size):
 
 
     # note: Sets the title & fonts of the graph
-    fig.update_layout(title={'text': "Gene Map",
+    fig.update_layout(title={'text': " Gene Map",
                             'x':0.5,
                             'xanchor': 'center',
                             'yanchor': 'top'},
@@ -252,7 +252,6 @@ def makeArray(strings): # Input is a list of tuples of our encoded strings
     # Returns a tuple of lists - Pre-array
     return (bebG, cheG, esnG, gbrG, pelG)
 
-
 # Gives you single value fst for population comparison
 def calc_hudson_fst_1v1(pop_array1, pop_array2):
     genotype_array1 = allel.GenotypeArray(pop_array1)
@@ -262,7 +261,6 @@ def calc_hudson_fst_1v1(pop_array1, pop_array2):
     num, den = allel.hudson_fst(ac1, ac2)
     fst = np.sum(num) / np.sum(den)
     return fst 
-
 
 # Get the FST for all comparisons of the populations selected - output: html table
 def all_hudson_fsts(array, subpop):
@@ -327,10 +325,9 @@ def all_hudson_fsts(array, subpop):
         pass
     
     # Convert output into a HTML table
-    FSTs = pd.DataFrame(list(fsts.items()),columns = ['Populations','Average Hudson FST']).to_html(classes=' content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    FSTs = pd.DataFrame(list(fsts.items()),columns = ['Sub-Populations','Average Hudson FST']).to_html(classes=' content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
 
     return FSTs
-
 
 # Get the FST for all comparisons of the populations selected - output: dictionary
 def calc_hudson_fst(array, subpop):
@@ -431,7 +428,6 @@ def strink(num):
     else:
         pass
 
-
 # note: Generates a scatter graph if given a dictionary of values
 def FSTscatter(input, start, stop):
 
@@ -480,10 +476,10 @@ def FSTscatter(input, start, stop):
     # note: plots the scatter graph
     fig = px.scatter(df, x="Pop", y="FST", color="Range",
                      color_discrete_sequence=px.colors.qualitative.Dark24,
-                     labels={"Range": "FST Region on Chromosome (bp) ",
-                             "Pop": "Population Group",
-                             "FST": "FST Value"},
-                     title="Hudson FST",
+                     labels={"Range": "Region on Chromosome (bp) ",
+                             "Pop": "Sub-Population Comparison",
+                             "FST": "Hudson FST"},
+                     title="Hudson FST Across the Selected Region",
                      animation_frame="Range",
                      animation_group="Pop")
     fig.update_traces(marker=dict(size=12))
@@ -508,12 +504,12 @@ def FSTscatter(input, start, stop):
 
 
 
-##################### Tajimas D ####################
 
 
 
+################### Shannon Diversity ###################
 
-# Shannon Diveristy 
+
 def sdi(af): #A list of allele frequencies per snp 
     index = []
   
@@ -526,6 +522,7 @@ def sdi(af): #A list of allele frequencies per snp
     H = -sum(index)
     return H
 
+# Produce a HTML table for shannon diversity
 def Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop):
 
     # Turn extracted list of tuples of strings into a list of floats
@@ -581,346 +578,9 @@ def Shannon(allsnps, BAF, GAF, CAF, PAF, EAF, subpop):
 
     Shannon = pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations']).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id1', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
 
-    #pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations']).to_csv('Shannon.csv') 
-
     return Shannon
 
-# Tajimas D
-
-def Tajimas(genotype_array, subpop):
-
-    # extract genotype array into samples
-    bebG, cheG, esnG, gbrG, pelG = genotype_array
-
-    # ONly retain selected populations
-    poplst=[]
-    poplst2=[]
-    for item in subpop:
-        if item == 'BEB':
-            poplst.append('Bengali')
-            poplst2.append(bebG)
-
-        elif item == 'GBR':
-            poplst.append('Great Britain')
-            poplst2.append(gbrG)
-        
-        elif item == 'CHB':
-            poplst.append('China')
-            poplst2.append(cheG)
-
-        elif item == 'PEL':
-            poplst.append('Peru')
-            poplst2.append(pelG)
-        
-        elif item == 'ESN':
-            poplst.append('Nigeria')
-            poplst2.append(esnG)
-        else:
-            pass
-
-
-
-    Tajima_D = {}
-    
-    for pair,val in zip( combinations([*poplst],1), combinations([*poplst2],1)):
-        
-        ac = allel.GenotypeArray(val[0]).count_alleles()
-       
-        fst = allel.tajima_d(ac)
-    
-        Tajima_D.update({str(pair).strip("(''),") : fst})
-
-    Tajima = pd.DataFrame(list(Tajima_D.items()),columns = ['Subpopulation',"Tajima's D for Selected Population"]).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id2', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
-    
-    return Tajima
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-def moving_tajimas_d(array, subpop):
-    # passing sequences into makeArray function
-   
-    # extract genotype array into samples
-    bebG, cheG, esnG, gbrG, pelG = array
-
-    l1=[]
-    l2=[]
-
-    for item in subpop:
-
-        if item == 'BEB':
-            l1.append('BEB')
-            l2.append(bebG)
-
-        elif item == 'GBR':
-            l1.append('GBR')
-            l2.append(gbrG)
-        
-        elif item == 'CHB':
-            l1.append('CHB')
-            l2.append(cheG)
-
-        elif item == 'PEL':
-            l1.append('PEL')
-            l2.append(pelG)
-        
-        elif item == 'ESN':
-            l1.append('ESN')
-            l2.append(esnG)
-        else:
-            pass
-    
-    moving_Tajima_D = {}
-    
-    for pair,val in zip( combinations(l1,1), combinations(l2,1)):
-        
-        ac1 = allel.GenotypeArray(val[0]).count_alleles()
-        
-        fst = allel.moving_tajima_d(ac1, 50, step = 1)
-
-        fst=list(fst)
-    
-        moving_Tajima_D.update({pair : fst})
-    
-    return moving_Tajima_D
-
-def TD_Bar2(taj, positions):
-
-    for v in taj.values():
-        nstep = len(v)
-
-    count=0
-    d={}
-    for item in positions:
-
-        d[count]=item
-        count+=1
-
-    z=[]
-    for i, j in enumerate(range(nstep)):
-
-        z.append(d[i])
-
-
-
-    steplabels = z #list(range(1, nstep + 1, 1))
-
-    # note: Creates a nested dictionary for the input
-    nest = {}
-    for k, v in taj.items():
-        nest[k] = dict(zip(steplabels, v))
-
-    # note: Creates a df for the graph
-    df = pd.DataFrame.from_dict(nest, orient='index').stack().reset_index()
-    df.columns = ['Pop', 'Step', 'TD']
-
-    # note: Plots the graph
-    fig = px.bar(df, x='Step', y='TD', color='Pop', barmode='overlay',
-                 color_discrete_sequence=px.colors.qualitative.G10)
-
-    # note: Sets the fonts and layout
-    fig.update_layout(font_family="Times New Roman",
-                      font_color="Black",
-                      title_font_family="Times New Roman",
-                      title_font_color="Black")
-
-    # note: Creates a range slider
-    fig.update_layout(
-        xaxis=dict(
-            rangeselector=dict(
-                buttons=list([
-                    dict(count=200000,
-                         label="200000bp",
-                         step="all",
-                         stepmode="backward"),
-                    dict(count=400000,
-                         label="400000bp",
-                         step="all",
-                         stepmode="backward"),
-                    dict(count=600000,
-                         label="600000bp",
-                         step="all",
-                         stepmode="backward"),
-                    dict(count=800000,
-                         label="800000bp",
-                         step="all",
-                         stepmode="backward"),
-                    dict(step="all")
-                ])
-            ),
-            rangeslider=dict(
-                visible=True
-            ),
-            type="linear"
-        )
-    )
-
-    graph=pio.to_html(fig)
-
-    return graph
-
-
-def Tajimas2(genotype_array, subpop):
-
-    # extract genotype array into samples
-    bebG, cheG, esnG, gbrG, pelG = genotype_array
-
-    # ONly retain selected populations
-    poplst=[]
-    poplst2=[]
-    for item in subpop:
-        if item == 'BEB':
-            poplst.append('Bengali')
-            poplst2.append(bebG)
-
-        elif item == 'GBR':
-            poplst.append('Great Britain')
-            poplst2.append(gbrG)
-        
-        elif item == 'CHB':
-            poplst.append('China')
-            poplst2.append(cheG)
-
-        elif item == 'PEL':
-            poplst.append('Peru')
-            poplst2.append(pelG)
-        
-        elif item == 'ESN':
-            poplst.append('Nigeria')
-            poplst2.append(esnG)
-        else:
-            pass
-
-
-
-    Tajima_D = {}
-    
-    for pair,val in zip( combinations([*poplst],1), combinations([*poplst2],1)):
-        
-        ac = allel.GenotypeArray(val[0]).count_alleles()
-       
-        fst = allel.tajima_d(ac)
-    
-        Tajima_D.update({str(pair).strip("(''),") : fst})
-
-    
-    return Tajima_D
-
-
-
-
-def taj_dict_calc(positions, array, subpop, dividend=1000): 
-    
-    indices = {}
-
-    for i, num in enumerate(sorted(positions)):
-        
-        # take upper integer value of num
-        n = math.ceil(num/dividend)
-        
-        # add the indices to the corresponding key as n
-        indices.setdefault(n, []).append(i)
-    
-    # sort the dictionariy
-    indices = dict(sorted(indices.items(), key=lambda x:x[0]))
-    
-    fst_dict1 = {}
-    fst_dict2 = {}
-    index_positions = {}
-
-    for i, val in indices.items():
-
-        ns=[]
-        for item in array:
-            ns+=[item[val[0]:val[-1]]]
-        
-
-        results = Tajimas2(ns, subpop)
-        #print(results)
-        
-        
-        # update index_positions dictionary as {i : range} pair
-        index_positions.update({i : str(val[0])+':'+str(val[-1])})
-        
-        
-        # update fst_dict2 dictionary as {i : results} pair
-        fst_dict2.update({i : results})
-
-        
-        for k, v in results.items():
-            
-            # nested dictionary as {pops : {index : fst_value}}
-            fst_dict1.setdefault(k, {}).update({i : v})
-
-    return fst_dict1
-
-def mtaj_dict_calc(positions, array, subpop, dividend=1000): 
-    
-    indices = {}
-
-    for i, num in enumerate(sorted(positions)):
-        
-        # take upper integer value of num
-        n = math.ceil(num/dividend)
-        
-        # add the indices to the corresponding key as n
-        indices.setdefault(n, []).append(i)
-    
-    # sort the dictionariy
-    indices = dict(sorted(indices.items(), key=lambda x:x[0]))
-    
-    fst_dict1 = {}
-    fst_dict2 = {}
-    index_positions = {}
-
-    for i, val in indices.items():
-
-        ns=[]
-        for item in array:
-            ns+=[item[val[0]:val[-1]]]
-        
-
-        results = moving_tajimas_d(ns, subpop)
-        #print(results)
-        
-        
-        # update index_positions dictionary as {i : range} pair
-        index_positions.update({i : str(val[0])+':'+str(val[-1])})
-        
-        
-        # update fst_dict2 dictionary as {i : results} pair
-        fst_dict2.update({i : results})
-
-        
-        for k, v in results.items():
-            
-            # nested dictionary as {pops : {index : fst_value}}
-            fst_dict1.setdefault(k, {}).update({i : v})
-
-    return fst_dict1
-
-
-
-
+# Produce a data frame of shannon diversities as graph input
 def ShannonG(allsnps, BAF, GAF, CAF, PAF, EAF, subpop, positions):
 
     # Turn extracted list of tuples of strings into a list of floats
@@ -974,9 +634,6 @@ def ShannonG(allsnps, BAF, GAF, CAF, PAF, EAF, subpop, positions):
     zip_iterator = zip(snlst, shnnlst)
     dictionary=dict(zip_iterator)
 
-    #Shannon = pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations']).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id1', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
-
-    #pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations']).to_csv('Shannon.csv') 
 
     Shannon = pd.DataFrame(list(dictionary.items()),columns = ['SNP name','Shannon Diversity for Selected Populations'])
 
@@ -984,11 +641,13 @@ def ShannonG(allsnps, BAF, GAF, CAF, PAF, EAF, subpop, positions):
 
     return Shannon
 
+# Produce a line graph for shannon diversity
 def ShannonGraph(df):
 
+    # Rename columns
     df.columns = ['SNP', 'Shannon', 'POS']
 
-    # NOTE: Plots the graph
+    # note: Plots the graph
     fig = px.line(df, y='Shannon', x='POS',
                   hover_data=["POS", "Shannon", "SNP"],
                   labels={"POS": "Chromosome Position (bp)",
@@ -996,7 +655,7 @@ def ShannonGraph(df):
                           "SNP": "SNP"})
     fig.update_traces(line_color='goldenrod')
 
-    # NOTE: Centers the title and fonts
+    # note: Centers the title and fonts
     fig.update_layout(title={'text': "Shannon Diversity",
                              'x':0.5,
                              'xanchor': 'center',
@@ -1008,13 +667,13 @@ def ShannonGraph(df):
                       title_font_family="Times New Roman",
                       title_font_color="Black")
 
-    # NOTE: Adds cross section cursor
+    # note: Adds cross section cursor
     fig.update_xaxes(showspikes=True, spikecolor="Grey", spikesnap="cursor",
                      spikemode="across")
     fig.update_yaxes(showspikes=True, spikecolor="Black", spikethickness=2)
     fig.update_layout(spikedistance=1000, hoverdistance=100)
 
-    # NOTE: Adds sliding window
+    # note: Adds sliding window
     fig.update_layout(
         xaxis=dict(
             rangeselector=dict(
@@ -1052,12 +711,232 @@ def ShannonGraph(df):
 
 
 
+##################### Tajimas D ####################
 
 
 
 
 
+# Create html table showing tajimas d for each subpopulation selected
+def Tajimas(genotype_array, subpop):
 
+    # extract genotype array into samples
+    bebG, cheG, esnG, gbrG, pelG = genotype_array
+
+    # ONly retain selected populations
+    poplst=[]
+    poplst2=[]
+    for item in subpop:
+        if item == 'BEB':
+            poplst.append('Bengali')
+            poplst2.append(bebG)
+
+        elif item == 'GBR':
+            poplst.append('Great Britain')
+            poplst2.append(gbrG)
+        
+        elif item == 'CHB':
+            poplst.append('China')
+            poplst2.append(cheG)
+
+        elif item == 'PEL':
+            poplst.append('Peru')
+            poplst2.append(pelG)
+        
+        elif item == 'ESN':
+            poplst.append('Nigeria')
+            poplst2.append(esnG)
+        else:
+            pass
+
+
+
+    Tajima_D = {}
+    
+    for pair,val in zip( combinations([*poplst],1), combinations([*poplst2],1)):
+        
+        ac = allel.GenotypeArray(val[0]).count_alleles()
+       
+        fst = allel.tajima_d(ac)
+    
+        Tajima_D.update({str(pair).strip("(''),") : fst})
+
+    Tajima = pd.DataFrame(list(Tajima_D.items()),columns = ['Subpopulation',"Tajima's D for Selected Population"]).to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id2', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    
+    return Tajima
+
+# Create dictionary showing tajimas d for each subpopulation selected
+def Tajimas2(genotype_array, subpop):
+
+    # extract genotype array into samples
+    bebG, cheG, esnG, gbrG, pelG = genotype_array
+
+    # ONly retain selected populations
+    poplst=[]
+    poplst2=[]
+    for item in subpop:
+        if item == 'BEB':
+            poplst.append('Bengali')
+            poplst2.append(bebG)
+
+        elif item == 'GBR':
+            poplst.append('Great Britain')
+            poplst2.append(gbrG)
+        
+        elif item == 'CHB':
+            poplst.append('China')
+            poplst2.append(cheG)
+
+        elif item == 'PEL':
+            poplst.append('Peru')
+            poplst2.append(pelG)
+        
+        elif item == 'ESN':
+            poplst.append('Nigeria')
+            poplst2.append(esnG)
+        else:
+            pass
+
+
+
+    Tajima_D = {}
+    
+    for pair,val in zip( combinations([*poplst],1), combinations([*poplst2],1)):
+        
+        ac = allel.GenotypeArray(val[0]).count_alleles()
+       
+        fst = allel.tajima_d(ac)
+    
+        Tajima_D.update({str(pair).strip("(''),") : fst})
+
+    
+    return Tajima_D
+
+ # create tajimas d dictionary for all bins to input to graph function
+def taj_dict_calc(positions, array, subpop, dividend=1000): 
+    
+    indices = {}
+
+    for i, num in enumerate(sorted(positions)):
+        
+        # take upper integer value of num
+        n = math.ceil(num/dividend)
+        
+        # add the indices to the corresponding key as n
+        indices.setdefault(n, []).append(i)
+    
+    # sort the dictionariy
+    indices = dict(sorted(indices.items(), key=lambda x:x[0]))
+    
+    fst_dict1 = {}
+    fst_dict2 = {}
+    index_positions = {}
+
+    for i, val in indices.items():
+
+        ns=[]
+        for item in array:
+            ns+=[item[val[0]:val[-1]]]
+        
+
+        results = Tajimas2(ns, subpop)
+        #print(results)
+        
+        
+        # update index_positions dictionary as {i : range} pair
+        index_positions.update({i : str(val[0])+':'+str(val[-1])})
+        
+        
+        # update fst_dict2 dictionary as {i : results} pair
+        fst_dict2.update({i : results})
+
+        
+        for k, v in results.items():
+            
+            # nested dictionary as {pops : {index : fst_value}}
+            fst_dict1.setdefault(k, {}).update({i : v})
+
+    return fst_dict1
+
+# note: Converts 200000 to 2M for better legend formating
+def strink2(num):
+    if len(str(num)) <= 5:
+        snum = str((num/1000))+'k'
+        return snum
+    elif len(str(num)) >= 6:
+        snum = str((num/1000000))+'M'
+        return snum
+    else:
+        pass
+
+# note: Plots a Barchart for Tajima's D
+def TD_Bar(input, start, stop):
+
+    # note: Creates a list of nested keys from input dict
+    ik = []
+    for v in input.values():
+        for key in v.keys():
+            ik.append(key)
+
+    # note: records the number of steps in the input data
+    vlen = []
+    for v in input.values():
+        vlen.append(len(v.values()))
+    print(vlen)
+
+    # note: Calculates the step size of the input data
+    step = int((stop - start)/vlen[0])
+    print(step)
+
+    # note: Creates the range caterogies
+    bounds = [
+             (strink2(n+1)+''+'-'+''+strink2(min(n+step, stop)))
+             for n in range(start, stop, step)
+             ]
+    print(bounds)
+
+    # note: Maps each nested key from the input dict to a boundary
+    first = ik[0:vlen[0]]
+    keydict = dict(zip(first, bounds))
+    print(len(keydict))
+
+    # note: Creates df for graph
+    df = pd.DataFrame.from_dict(input, orient='index').stack().reset_index()
+    df = df.fillna('')
+    df.columns = ['Pop', 'Step', 'TD']
+    df['Step'].replace(keydict, inplace=True)
+    print(df)
+
+    # note: Plots the graph
+    fig = px.bar(df, y='TD', x='Step', color='Pop', barmode='overlay',
+                 labels={"Step": "Region on Chromosome (bp) ",
+                         "Pop": "Population Group",
+                         "TD": "Tajima's D"},
+                 title="Tajima's Diversity",
+                 color_discrete_sequence=px.colors.qualitative.G10)
+
+    # note: Sets the fonts and layout
+    fig.update_layout(font_family="Times New Roman",
+                      font_color="Black",
+                      title_font_family="Times New Roman",
+                      title_font_color="Black")
+
+    # note: Adds range slider
+    fig.update_layout(xaxis=dict(rangeslider=dict(visible=True)))
+
+
+    graph=pio.to_html(fig)
+
+    return graph
+
+
+
+
+############# Haplotype diversity ################ 
+
+
+
+# Calculate haplotype diversity
 def haplotype_diversity(array):
     # extract genotype array into samples
     bebG, cheG, esnG, gbrG, pelG = array
@@ -1081,9 +960,7 @@ def haplotype_diversity(array):
     
     return haplotype_diversity
 
-
-
-
+# Create HTML table for haplotype diversity
 def haplotype_diversity2T(positions, array, subpop, snpnum): 
     
     indices = {}
@@ -1225,10 +1102,7 @@ def haplotype_diversity2T(positions, array, subpop, snpnum):
 
     return df
 
-
-
-
-
+# Create dictionary as in put for graph function
 def haplotype_diversity2G(positions, array, subpop, snpnum=100): 
     
     indices = {}
@@ -1356,21 +1230,7 @@ def haplotype_diversity2G(positions, array, subpop, snpnum=100):
 
     return fst4
 
-
-
-# note: Converts 200000 to 2M for better legend formating
-def strink2(num):
-    if len(str(num)) <= 5:
-        snum = str((num/1000))+'k'
-        return snum
-    elif len(str(num)) >= 6:
-        snum = str((num/1000000))+'M'
-        return snum
-    else:
-        pass
-
-
-# note: Plots a Barchart for Tajima's D
+# Plots a Barchart for haplotype diversity
 def hp_Bar(input, start, stop):
     # note: Creates a list of nested keys from input dict
     ik = []
@@ -1427,69 +1287,4 @@ def hp_Bar(input, start, stop):
     graph=pio.to_html(fig)
 
     return graph
-
-
-
-
-# note: Plots a Barchart for Tajima's D
-def TD_Bar(input, start, stop):
-    # note: Creates a list of nested keys from input dict
-    ik = []
-    for v in input.values():
-        for key in v.keys():
-            ik.append(key)
-
-    # note: records the number of steps in the input data
-    vlen = []
-    for v in input.values():
-        vlen.append(len(v.values()))
-    print(vlen)
-
-    # note: Calculates the step size of the input data
-    step = int((stop - start)/vlen[0])
-    print(step)
-
-    # note: Creates the range caterogies
-    bounds = [
-             (strink2(n+1)+''+'-'+''+strink2(min(n+step, stop)))
-             for n in range(start, stop, step)
-             ]
-    print(bounds)
-
-    # note: Maps each nested key from the input dict to a boundary
-    first = ik[0:vlen[0]]
-    keydict = dict(zip(first, bounds))
-    print(len(keydict))
-
-    # note: Creates df for graph
-    df = pd.DataFrame.from_dict(input, orient='index').stack().reset_index()
-    df = df.fillna('')
-    df.columns = ['Pop', 'Step', 'TD']
-    df['Step'].replace(keydict, inplace=True)
-    print(df)
-
-    # note: Plots the graph
-    fig = px.bar(df, y='TD', x='Step', color='Pop', barmode='overlay',
-                 labels={"Step": "Region on Chromosome (bp) ",
-                         "Pop": "Population Group",
-                         "TD": "Tajima's D"},
-                 title="Tajima's Diversity",
-                 color_discrete_sequence=px.colors.qualitative.G10)
-
-    # note: Sets the fonts and layout
-    fig.update_layout(font_family="Times New Roman",
-                      font_color="Black",
-                      title_font_family="Times New Roman",
-                      title_font_color="Black")
-
-    # note: Adds range slider
-    fig.update_layout(xaxis=dict(rangeslider=dict(visible=True)))
-
-
-    graph=pio.to_html(fig)
-
-    return graph
-
-
-    
 
