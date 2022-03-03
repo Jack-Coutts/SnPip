@@ -39,5 +39,6 @@ Connecting your machine to the SnPip database stored on in a google cloud instan
 8. Scroll down till you reach the blue SAVE button and save your newly created network. In the bottom left hand corner of the screen you will notice a window
    showing the time taken for the current operation to execute (in this case it will be saving you newtork), once a green check mark has appaared then the your
    network is saved.
+  
    
  Congratulations! You are now authorised to connect to the SnPip database.
