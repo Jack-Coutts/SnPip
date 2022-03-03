@@ -22,9 +22,8 @@ app = create_app()
 
 # Set up a connection with the MySQL database
 try:
-    mydb = mysql.connector.connect(host="localhost",
-                                    user="root",
-                                    password="password",
+    mydb = mysql.connector.connect(host="34.89.113.123",
+                                    user="User3",
                                     database="SnPip") # Database Name
 
     mycursor = mydb.cursor(buffered=True)
