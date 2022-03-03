@@ -5,6 +5,7 @@ Connecting your machine to the SnPip database stored on in a google cloud instan
 1. log into https://console.cloud.google.com/ using the provided email bellow.
 
   Email: snpip332022@gmail.com
+  
   Password: my-secret-password
 
 2. In the navigation menu (the three bars located on the top left of the website) select SQL, this will bring up the snpip database.
