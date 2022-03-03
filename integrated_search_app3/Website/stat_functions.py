@@ -1,31 +1,18 @@
-# Shannon Diveristy
+# Import statements
 import math
 from math import log as ln
 from operator import index
-# FST
 import numpy as np
 import pandas as pd
 import allel
 import plotly
-
-#Tajimas D
 from itertools import combinations
-
-# Initial graphs
 import plotly.express as px
-import json
-from json import JSONEncoder
 import plotly.io as pio
 import plotly.graph_objects as go
 
-import csv
 
-from sqlalchemy import column
-
-
-
-# Initial Graphs 
-# Gene Map
+################# Gene Map Graph ########################
 def gene_list_graph(position, database, increment_size):
 
     # note: Numbers for data to be selected based on position
@@ -126,15 +113,12 @@ def gene_list_graph(position, database, increment_size):
     # note: Adds a line at the input
     fig.add_vline(x=position, line_width=2, line_dash="dash", line_color="gray")
     
+    # Convert graoh to html
     a=pio.to_html(fig)
-
-
-
-    #fig.update_layout(width=1500, height=500)
-    #plot_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
   
     return a
 
+#################### SNP map Graph ####################
 
 def snp_map(windowsize, database):
 
@@ -208,49 +192,48 @@ def snp_map(windowsize, database):
         )
     )
 
+    # Converts graph to html
     graph=pio.to_html(fig)
 
     return graph
 
 
+################# Hudson FST ######################
 
 
-
-
-
-
-def makeArray(strings):
+def makeArray(strings): # Input is a list of tuples of our encoded strings
     
     # initialize sample array with empty list
     bebG, cheG, esnG, gbrG, pelG = [], [], [], [], []
     
-    # swap the keys and values in the dictionary below
+    # Decoding level one
     nested_dictionary = {'GBR':{'e':'a', 'f':'b', 'g':'c', 'h': 'd'},
                          'PEL':{'i':'a', 'j':'b', 'k':'c', 'l': 'd'},
                          'ESN':{'m':'a', 'n':'b', 'o':'c', 'p': 'd'},
                          'BEB':{'q':'a', 'r':'b', 's':'c', 't': 'd'},
                          'CHE':{'u':'a', 'v':'b', 'w':'c', 'x': 'd'}}
 
+    # Decoding level two
     ginfo = {'a':'1|0', 'b':'1|1', 'c':'0|1', 'd':'0|0'}
 
+    # Decoding by sub-population
     dic = {'e':'GBR', 'f':'GBR', 'g':'GBR', 'h':'GBR',
            'i':'PEL', 'j':'PEL', 'k':'PEL', 'l':'PEL',
            'm':'ESN', 'n':'ESN', 'o':'ESN', 'p':'ESN',
            'q':'BEB', 'r':'BEB', 's':'BEB', 't':'BEB',
            'u':'CHE', 'v':'CHE', 'w':'CHE', 'x':'CHE'}
     
+    # create list of encoded strings
     lst=[]
     for item in strings:
-
         for p in item:
-
             lst.append(p)
 
-    
+    # Iterate over stings in list
     for string in lst:
         string = string.strip()
         genotypes = {}
-        
+        # Create indexed list of the strings
         for i, c in enumerate(string):
             # take sample as key and 0|1 etc as value
             genotypes.setdefault(dic[c], []).append(ginfo[nested_dictionary[dic[c]][c]])
@@ -266,11 +249,11 @@ def makeArray(strings):
         esnG.append(genotype_array[2])
         gbrG.append(genotype_array[3])
         pelG.append(genotype_array[4])
-        
+    # Returns a tuple of lists - Pre-array
     return (bebG, cheG, esnG, gbrG, pelG)
 
 
-# Gives you sinnge value fst for population comparison
+# Gives you single value fst for population comparison
 def calc_hudson_fst_1v1(pop_array1, pop_array2):
     genotype_array1 = allel.GenotypeArray(pop_array1)
     genotype_array2 = allel.GenotypeArray(pop_array2)
@@ -280,16 +263,6 @@ def calc_hudson_fst_1v1(pop_array1, pop_array2):
     fst = np.sum(num) / np.sum(den)
     return fst 
 
-# Moving window definded so that the number of fsts is always the same - as long as number of snps is not too small
-def moving_hudson(pop_array1, pop_array2, moving_window):
-    
-    genotype_array1 = allel.GenotypeArray(pop_array1)
-    genotype_array2 = allel.GenotypeArray(pop_array2)
-    ac1 = genotype_array1.count_alleles()
-    ac2 = genotype_array2.count_alleles()
-    mfst=allel.moving_hudson_fst(ac1, ac2, moving_window)
-    
-    return mfst
 
 # Get the FST for all comparisons of the populations selected
 def all_hudson_fsts(array, subpop):
@@ -299,7 +272,7 @@ def all_hudson_fsts(array, subpop):
 
     fsts={}
 
-    # Run FST comparisons
+    # Run all FST comparisons selected
     if 'BEB' in subpop and 'GBR' in subpop:
 
         BvG = calc_hudson_fst_1v1(bebG, gbrG)
@@ -352,10 +325,199 @@ def all_hudson_fsts(array, subpop):
 
     else:
         pass
-
+    
+    # Convert output into a HTML table
     FSTs = pd.DataFrame(list(fsts.items()),columns = ['Populations','Average Hudson FST']).to_html(classes=' content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
 
     return FSTs
+
+
+def calc_hudson_fst(array, subpop):
+    # passing sequences into makeArray function
+    g = array
+    # extract genotype array into samples
+    bebG, cheG, esnG, gbrG, pelG = g
+
+    l1=[]
+    l2=[]
+
+    for item in subpop:
+
+        if item == 'BEB':
+            l1.append('BEB')
+            l2.append(bebG)
+
+        elif item == 'GBR':
+            l1.append('GBR')
+            l2.append(gbrG)
+        
+        elif item == 'CHB':
+            l1.append('CHB')
+            l2.append(cheG)
+
+        elif item == 'PEL':
+            l1.append('PEL')
+            l2.append(pelG)
+        
+        elif item == 'ESN':
+            l1.append('ESN')
+            l2.append(esnG)
+        else:
+            pass
+    
+    FSTs = {}
+    # Iterate over dictionary of the created lists
+    for pair,val in zip( combinations(l1,2), combinations(l2,2)):
+        # Create arrays
+        ac1 = allel.GenotypeArray(val[0]).count_alleles()
+        ac2 = allel.GenotypeArray(val[1]).count_alleles()
+        num, den = allel.hudson_fst(ac1, ac2)
+        fst = np.sum(num)/np.sum(den)
+        # Output dictionary
+        FSTs.update({pair : fst})
+    
+    return FSTs
+
+
+def fst_dict_calc(positions, array, subpop, dividend=1000): 
+
+
+    
+    indices = {}
+
+    for i, num in enumerate(sorted(positions)):
+        
+        # take upper integer value of num
+        n = math.ceil(num/dividend)
+        
+        # add the indices to the corresponding key as n
+        indices.setdefault(n, []).append(i)
+    
+    # sort the dictionariy
+    indices = dict(sorted(indices.items(), key=lambda x:x[0]))
+    
+    fst_dict1 = {}
+    fst_dict2 = {}
+    index_positions = {}
+
+    for i, val in indices.items():
+
+        ns=[]
+        for item in array:
+            ns+=[item[val[0]:val[-1]]]
+        
+
+        results = calc_hudson_fst(ns, subpop)
+        #print(results)
+        
+        
+        # update index_positions dictionary as {i : range} pair
+        index_positions.update({i : str(val[0])+':'+str(val[-1])})
+        
+        
+        # update fst_dict2 dictionary as {i : results} pair
+        fst_dict2.update({i : results})
+
+        
+        for k, v in results.items():
+            
+            # nested dictionary as {pops : {index : fst_value}}
+            fst_dict1.setdefault(k, {}).update({i : v})
+
+    return fst_dict1
+
+# Converts 200000 to 2M for better legend formating
+def strink(num):
+    if len(str(num)) <= 5:
+        snum = str((num/1000))+'k'
+        return snum
+    elif len(str(num)) >= 6:
+        snum = str((num/1000000))+'M'
+        return snum
+    else:
+        pass
+
+
+# note: Generates a scatter graph if given a dictionary of values
+def FSTscatter(input, start, stop):
+
+    ik = []
+    for v in input.values():
+        for key in v.keys():
+            ik.append(key)
+
+    # note: records the number of steps in the input data
+    vlen = []
+    for v in input.values():
+        vlen.append(len(v.values()))
+
+
+    # note: Calculates the step size of the input data
+    step = int((stop - start)/vlen[0])
+
+    # note: Creates the range caterogies
+    bounds = [
+             (strink(n)+'-'+strink(min(n+step, stop)))
+             for n in range(start, stop, step)
+             ]
+
+    # note: Maps each nested key from the input dict to a boundary
+    first = ik[0:vlen[0]]
+    keydict = dict(zip(first, bounds))
+
+
+    # note: Creates df for graph
+    df = pd.DataFrame.from_dict(input, orient='index').stack().reset_index()
+    df['Pop'] = df[['level_0', 'level_1']].agg('-'.join, axis=1)
+    del df['level_0']
+    del df['level_1']
+    df = df.fillna('')
+    df.columns = ['Range', 'FST', 'Pop']
+
+    df['Range'].replace(keydict, inplace=True)
+ 
+
+    # note: Sorts the FST values in the df to auto set max axis values
+    FST = list(df['FST'])
+    FST = [i for i in FST if i != '']
+    FST.sort(key=float)
+    #print(FST)
+
+    # note: plots the scatter graph
+    fig = px.scatter(df, x="Pop", y="FST", color="Range",
+                     color_discrete_sequence=px.colors.qualitative.Dark24,
+                     labels={"Range": "FST Region on Chromosome (bp) ",
+                             "Pop": "Population Group",
+                             "FST": "FST Value"},
+                     title="Hudson FST",
+                     animation_frame="Range",
+                     animation_group="Pop")
+    fig.update_traces(marker=dict(size=12))
+
+    # note: Sets the fonts and layout
+    fig.update_layout(font_family="Times New Roman",
+                      font_color="Black",
+                      title_font_family="Times New Roman",
+                      title_font_color="Black",
+                      legend={'traceorder': 'reversed'},
+                      showlegend=False,
+                      yaxis_range=[FST[0] - 0.01, FST[-1] + 0.01])
+    fig.add_hline(y=0.12, line_width=1, line_dash="dash", line_color="gray")
+    fig.add_hline(y=0.25, line_width=1, line_dash="dash", line_color="red")
+
+
+
+    graph=pio.to_html(fig)
+
+
+    return  graph
+
+
+
+##################### Tajimas D ####################
+
+
+
 
 # Shannon Diveristy 
 def sdi(af): #A list of allele frequencies per snp 
@@ -484,191 +646,20 @@ def Tajimas(genotype_array, subpop):
 
 
 
-# note: Converts 200000 to 2M for better legend formating
-def strink(num):
-    if len(str(num)) <= 5:
-        snum = str((num/1000))+'k'
-        return snum
-    elif len(str(num)) >= 6:
-        snum = str((num/1000000))+'M'
-        return snum
-    else:
-        pass
 
 
 
 
 
-from itertools import combinations
-
-def calc_hudson_fst(array, subpop):
-    # passing sequences into makeArray function
-    g = array
-    # extract genotype array into samples
-    bebG, cheG, esnG, gbrG, pelG = g
-
-    l1=[]
-    l2=[]
-
-    for item in subpop:
-
-        if item == 'BEB':
-            l1.append('BEB')
-            l2.append(bebG)
-
-        elif item == 'GBR':
-            l1.append('GBR')
-            l2.append(gbrG)
-        
-        elif item == 'CHB':
-            l1.append('CHB')
-            l2.append(cheG)
-
-        elif item == 'PEL':
-            l1.append('PEL')
-            l2.append(pelG)
-        
-        elif item == 'ESN':
-            l1.append('ESN')
-            l2.append(esnG)
-        else:
-            pass
-    
-    FSTs = {}
-    
-    for pair,val in zip( combinations(l1,2), combinations(l2,2)):
-        ac1 = allel.GenotypeArray(val[0]).count_alleles()
-        ac2 = allel.GenotypeArray(val[1]).count_alleles()
-        num, den = allel.hudson_fst(ac1, ac2)
-        fst = np.sum(num)/np.sum(den)
-        FSTs.update({pair : fst})
-    
-    return FSTs
 
 
 
-# note: Generates a scatter graph if given a dictionary of values
-def FSTscatter(input, start, stop):
 
-    ik = []
-    for v in input.values():
-        for key in v.keys():
-            ik.append(key)
-
-    # note: records the number of steps in the input data
-    vlen = []
-    for v in input.values():
-        vlen.append(len(v.values()))
-
-
-    # note: Calculates the step size of the input data
-    step = int((stop - start)/vlen[0])
-
-    # note: Creates the range caterogies
-    bounds = [
-             (strink(n)+'-'+strink(min(n+step, stop)))
-             for n in range(start, stop, step)
-             ]
-
-    # note: Maps each nested key from the input dict to a boundary
-    first = ik[0:vlen[0]]
-    keydict = dict(zip(first, bounds))
-
-
-    # note: Creates df for graph
-    df = pd.DataFrame.from_dict(input, orient='index').stack().reset_index()
-    df['Pop'] = df[['level_0', 'level_1']].agg('-'.join, axis=1)
-    del df['level_0']
-    del df['level_1']
-    df = df.fillna('')
-    df.columns = ['Range', 'FST', 'Pop']
-
-    df['Range'].replace(keydict, inplace=True)
- 
-
-    # note: Sorts the FST values in the df to auto set max axis values
-    FST = list(df['FST'])
-    FST = [i for i in FST if i != '']
-    FST.sort(key=float)
-    #print(FST)
-
-    # note: plots the scatter graph
-    fig = px.scatter(df, x="Pop", y="FST", color="Range",
-                     color_discrete_sequence=px.colors.qualitative.Dark24,
-                     labels={"Range": "FST Region on Chromosome (bp) ",
-                             "Pop": "Population Group",
-                             "FST": "FST Value"},
-                     title="Hudson FST",
-                     animation_frame="Range",
-                     animation_group="Pop")
-    fig.update_traces(marker=dict(size=12))
-
-    # note: Sets the fonts and layout
-    fig.update_layout(font_family="Times New Roman",
-                      font_color="Black",
-                      title_font_family="Times New Roman",
-                      title_font_color="Black",
-                      legend={'traceorder': 'reversed'},
-                      showlegend=False,
-                      yaxis_range=[FST[0] - 0.01, FST[-1] + 0.01])
-    fig.add_hline(y=0.12, line_width=1, line_dash="dash", line_color="gray")
-    fig.add_hline(y=0.25, line_width=1, line_dash="dash", line_color="red")
-
-
-
-    graph=pio.to_html(fig)
-
-
-    return  graph
 
 
 
     
 
-def fst_dict_calc(positions, array, subpop, dividend=1000): 
-    
-    indices = {}
-
-    for i, num in enumerate(sorted(positions)):
-        
-        # take upper integer value of num
-        n = math.ceil(num/dividend)
-        
-        # add the indices to the corresponding key as n
-        indices.setdefault(n, []).append(i)
-    
-    # sort the dictionariy
-    indices = dict(sorted(indices.items(), key=lambda x:x[0]))
-    
-    fst_dict1 = {}
-    fst_dict2 = {}
-    index_positions = {}
-
-    for i, val in indices.items():
-
-        ns=[]
-        for item in array:
-            ns+=[item[val[0]:val[-1]]]
-        
-
-        results = calc_hudson_fst(ns, subpop)
-        #print(results)
-        
-        
-        # update index_positions dictionary as {i : range} pair
-        index_positions.update({i : str(val[0])+':'+str(val[-1])})
-        
-        
-        # update fst_dict2 dictionary as {i : results} pair
-        fst_dict2.update({i : results})
-
-        
-        for k, v in results.items():
-            
-            # nested dictionary as {pops : {index : fst_value}}
-            fst_dict1.setdefault(k, {}).update({i : v})
-
-    return fst_dict1
 
 
 def moving_tajimas_d(array, subpop):
