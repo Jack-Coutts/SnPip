@@ -20,6 +20,8 @@ Connecting your machine to the SnPip database stored on in a google cloud instan
 
 4. From the overview page select the connections tab
 
+![image](https://user-images.githubusercontent.com/83500298/156596093-bb90b8a8-8ea0-49db-b225-7c40849947cf.png)
+
 5. Once on the connection page scroll down untill you reach ADD NETWORK (Nothing else needs to be interacted with)
 
 6. Click on the ADD NETWORK button and input:
