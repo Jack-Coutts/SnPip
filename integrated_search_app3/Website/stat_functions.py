@@ -264,7 +264,7 @@ def calc_hudson_fst_1v1(pop_array1, pop_array2):
     return fst 
 
 
-# Get the FST for all comparisons of the populations selected
+# Get the FST for all comparisons of the populations selected - output: html table
 def all_hudson_fsts(array, subpop):
 
     # extract genotype array into samples
@@ -332,6 +332,7 @@ def all_hudson_fsts(array, subpop):
     return FSTs
 
 
+# Get the FST for all comparisons of the populations selected - output: dictionary
 def calc_hudson_fst(array, subpop):
     # passing sequences into makeArray function
     g = array
@@ -378,11 +379,9 @@ def calc_hudson_fst(array, subpop):
     
     return FSTs
 
-
+# Create dictionary of all fsts for all subpop combinations for each bin 
 def fst_dict_calc(positions, array, subpop, dividend=1000): 
 
-
-    
     indices = {}
 
     for i, num in enumerate(sorted(positions)):
@@ -404,21 +403,16 @@ def fst_dict_calc(positions, array, subpop, dividend=1000):
 
         ns=[]
         for item in array:
-            ns+=[item[val[0]:val[-1]]]
-        
+            ns+=[item[val[0]:val[-1]]] 
 
         results = calc_hudson_fst(ns, subpop)
-        #print(results)
-        
-        
+         
         # update index_positions dictionary as {i : range} pair
         index_positions.update({i : str(val[0])+':'+str(val[-1])})
-        
         
         # update fst_dict2 dictionary as {i : results} pair
         fst_dict2.update({i : results})
 
-        
         for k, v in results.items():
             
             # nested dictionary as {pops : {index : fst_value}}
@@ -506,7 +500,7 @@ def FSTscatter(input, start, stop):
     fig.add_hline(y=0.25, line_width=1, line_dash="dash", line_color="red")
 
 
-
+    # Convert graph to html
     graph=pio.to_html(fig)
 
 
