@@ -138,7 +138,7 @@ def BEB_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
         BEB = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        BEB=pd.DataFrame(BEB, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        BEB=pd.DataFrame(BEB, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('BEB_info.html', BEB=BEB)
 
@@ -154,7 +154,7 @@ def BEB_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Bengali'", [snp])
         BEB = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        BEB=pd.DataFrame(BEB, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        BEB=pd.DataFrame(BEB, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('BEB_info.html', BEB=BEB)
 
@@ -171,7 +171,7 @@ def BEB_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE SUBPOP LIKE 'Bengali' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s)", (areastart, areaend))
         BEB = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        BEB=pd.DataFrame(BEB, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        BEB=pd.DataFrame(BEB, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('BEB_info.html', BEB=BEB)
 
@@ -192,7 +192,7 @@ def GBR_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
         GBR = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        GBR=pd.DataFrame(GBR, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        GBR=pd.DataFrame(GBR, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('GBR_info.html', GBR=GBR)
 
@@ -208,7 +208,7 @@ def GBR_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'GBR'", [snp])
         GBR = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        GBR=pd.DataFrame(GBR, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        GBR=pd.DataFrame(GBR, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('GBR_info.html', GBR=GBR)
 
@@ -225,7 +225,7 @@ def GBR_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE SUBPOP LIKE 'GBR' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s)", (areastart, areaend))
         GBR = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        GBR=pd.DataFrame(GBR, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        GBR=pd.DataFrame(GBR, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('GBR_info.html', GBR=GBR)
 
@@ -246,7 +246,7 @@ def CHB_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
         CHB = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        CHB=pd.DataFrame(CHB, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        CHB=pd.DataFrame(CHB, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('CHB_info.html', CHB=CHB)
 
@@ -261,7 +261,7 @@ def CHB_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'China'", [snp])
         CHB = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        CHB=pd.DataFrame(CHB, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        CHB=pd.DataFrame(CHB, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('CHB_info.html', CHB=CHB)
 
@@ -277,7 +277,7 @@ def CHB_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE SUBPOP LIKE 'China' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s)", (areastart, areaend))
         CHB = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        CHB=pd.DataFrame(CHB, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        CHB=pd.DataFrame(CHB, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('CHB_info.html', CHB=CHB)
 
@@ -298,7 +298,7 @@ def PEL_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
         PEL = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        PEL=pd.DataFrame(PEL, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        PEL=pd.DataFrame(PEL, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('PEL_info.html', PEL=PEL)
 
@@ -313,7 +313,7 @@ def PEL_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Peru'", [snp])
         PEL = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        PEL=pd.DataFrame(PEL, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        PEL=pd.DataFrame(PEL, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('PEL_info.html', PEL=PEL)
 
@@ -329,7 +329,7 @@ def PEL_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE SUBPOP LIKE 'Peru' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s)", (areastart, areaend))
         PEL = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        PEL=pd.DataFrame(PEL, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        PEL=pd.DataFrame(PEL, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('PEL_info.html', PEL=PEL)
 
@@ -350,7 +350,7 @@ def ESN_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE GENE LIKE %s)", [gene])
         ESN = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        ESN=pd.DataFrame(ESN, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        ESN=pd.DataFrame(ESN, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('ESN_info.html', ESN=ESN)
 
@@ -365,7 +365,7 @@ def ESN_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE ID LIKE %s AND SUBPOP LIKE 'Nigeria'", [snp])
         ESN = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        ESN=pd.DataFrame(ESN, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        ESN=pd.DataFrame(ESN, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('ESN_info.html', ESN=ESN)
 
@@ -381,7 +381,7 @@ def ESN_info(): # this function will run whenever we go to this route
         mycursor.execute("SELECT ID, SUBPOP, FORMAT(AF,5), FORMAT(ALTREF,5), FORMAT(REFALT,5), FORMAT(ALTALT,5), FORMAT(REFREF,5) FROM subpop WHERE SUBPOP LIKE 'Nigeria' AND ID IN (SELECT ID FROM snp WHERE %s <= POS AND POS <= %s)", (areastart, areaend))
         ESN = mycursor.fetchall() # store data
         # Create pandas dataframe and then html tale of the collected data
-        ESN=pd.DataFrame(ESN, columns=['ID', 'SUBPOP', 'AF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
+        ESN=pd.DataFrame(ESN, columns=['ID', 'SUBPOP', 'MAF', 'ALT|REF', 'REF|ALT', 'ALT|ALT', 'REF|REF']).to_html(classes='table table-stripped table-striped table-bordered table-sm', justify='left', index=False, show_dimensions=True, header=True)
         # Return the page with the stored table
         return render_template('ESN_info.html', ESN=ESN)
 

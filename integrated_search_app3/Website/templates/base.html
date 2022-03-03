@@ -69,16 +69,7 @@
 
 
   <!-- General Loading animation show and hide function-->
-  <script>
-    /*  javascript for General loading animation upon loading event*/
-
-      window.addEventListener("load", function() {          
-        const loader = document.querySelector(".loader");
-        console.log(loader);
-        loader.className += " hidden";
-      });
-
-  </script>
+  <script type="module" src="/static/js/loading.js"></script>
 
   <!--CSS General Loading gif style--->
   <link rel="stylesheet" href="/static/css/loading.css">
@@ -87,7 +78,7 @@
 
 <body>
 
-  <!-- Loading page, hidden until loading event --> 
+  <!-- Loading page -->
   <div class="loader">
     <img src="/static/dnaa.gif" align="Loading...">
   </div>

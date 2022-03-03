@@ -325,7 +325,7 @@ def all_hudson_fsts(array, subpop):
         pass
     
     # Convert output into a HTML table
-    FSTs = pd.DataFrame(list(fsts.items()),columns = ['Sub-Populations','Average Hudson FST']).to_html(classes=' content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
+    FSTs = pd.DataFrame(list(fsts.items()),columns = ['Subpopulations','Average Hudson FST']).to_html(classes=' content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
 
     return FSTs
 
@@ -477,7 +477,7 @@ def FSTscatter(input, start, stop):
     fig = px.scatter(df, x="Pop", y="FST", color="Range",
                      color_discrete_sequence=px.colors.qualitative.Dark24,
                      labels={"Range": "Region on Chromosome (bp) ",
-                             "Pop": "Sub-Population Comparison",
+                             "Pop": "Subpopulation Comparison",
                              "FST": "Hudson FST"},
                      title="Hudson FST Across the Selected Region",
                      animation_frame="Range",
@@ -656,7 +656,7 @@ def ShannonGraph(df):
     fig.update_traces(line_color='goldenrod')
 
     # note: Centers the title and fonts
-    fig.update_layout(title={'text': "Shannon Diversity",
+    fig.update_layout(title={'text': "Shannon Diversity Across the Selected Region",
                              'x':0.5,
                              'xanchor': 'center',
                              'yanchor': 'top'},
@@ -910,9 +910,9 @@ def TD_Bar(input, start, stop):
     # note: Plots the graph
     fig = px.bar(df, y='TD', x='Step', color='Pop', barmode='overlay',
                  labels={"Step": "Region on Chromosome (bp) ",
-                         "Pop": "Population Group",
+                         "Pop": "Subpopulation",
                          "TD": "Tajima's D"},
-                 title="Tajima's Diversity",
+                 title="Tajima's D Across the Selected Region",
                  color_discrete_sequence=px.colors.qualitative.G10)
 
     # note: Sets the fonts and layout
@@ -1095,7 +1095,7 @@ def haplotype_diversity2T(positions, array, subpop, snpnum):
 
     df=df.reset_index()
 
-    df.columns=['Sub-Population', 'Location', 'Haplotype Diversity']
+    df.columns=['Subpopulation', 'Location', 'Haplotype Diversity']
 
     df=df.to_html(classes='content-area clusterize-content table table-stripped table-striped table-bordered table-sm "id="my_id3', justify='left', index=False, show_dimensions=False, header=True) #table-responsive makes the table as small as possible
 
@@ -1270,9 +1270,9 @@ def hp_Bar(input, start, stop):
     # note: Plots the graph
     fig = px.bar(df, y='HAP', x='Step', color='Pop', barmode='overlay',
                  labels={"Step": "Region on Chromosome (bp) ",
-                         "Pop": "Population Group",
+                         "Pop": "Subpopulation",
                          "HAP": "Haplotype Diversity"},
-                 title="Haplotype Diversity",
+                 title="Haplotype Diversity Across Selected Region",
                  color_discrete_sequence=px.colors.qualitative.G10)
 
     # note: Sets the fonts and layout
