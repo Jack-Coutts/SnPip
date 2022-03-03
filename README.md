@@ -24,7 +24,7 @@ Connecting your machine to the SnPip database stored on in a google cloud instan
 
 6. Click on the ADD NETWORK button and input:
   - The network name in the name box
-  - Your machines ip address (which can be found here: https://whatismyipaddress.com/)
+  - Your machines ip address (IPV4) (which can be found here: https://whatismyipaddress.com/) in the ip box
 
 7. Click the DONE button
 
