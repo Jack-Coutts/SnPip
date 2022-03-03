@@ -1,5 +1,0 @@
-Flask==2.0.2
-Jinja2==3.0.3
-Flask-MySQL== 1.5.2
-PyMySQL== 1.0.2
-https://github.com/Jack-Coutts/SnPip/blob/main/integrated_search_app2/requirements.txt
