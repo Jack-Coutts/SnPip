@@ -1,4 +1,5 @@
 # SnPip
 
-Email: 
-Password: 
+Email: snpip332021@gmail.com
+
+Password: password
